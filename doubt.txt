@@ -1,0 +1,18 @@
+# User Doubts & Questions
+
+1. **Question**: Why use `POST` on logout instead of `GET`?
+   **Answer**: 
+   - **Security (CSRF Prevention)**: Prevents unauthorized logouts via simple image tags or links.
+   - **REST Principles**: Logout is a state-changing operation (invalidating a session), which should use `POST`.
+   - **Caching**: Browsers cache `GET` requests, which could lead to unexpected behavior for a logout endpoint.
+
+2. **Question**: Why use Google Generative AI and what other options are available?
+   **Answer**: 
+   - **Why Gemini?**: It offers a generous free tier for developers, is fast (`gemini-1.5-flash`), and has a straightforward Node.js SDK.
+   - **Other Options**: 
+     - **OpenAI (GPT-4o)**: The industry standard, very reliable, but usually requires a paid credit balance.
+     - **Anthropic (Claude 3.5 Sonnet)**: Excellent for reasoning and clean code generation.
+     - **Groq**: If you want extreme speed, Groq is the fastest way to run Llama 3 or Mixtral models.
+     - **Ollama**: For running models locally on your own machine (free and private).
+
+---
