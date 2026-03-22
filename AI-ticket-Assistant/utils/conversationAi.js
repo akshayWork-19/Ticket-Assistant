@@ -1,12 +1,13 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAi = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+console.log(process.env.GEMINI_API_KEY);
+const genAi = new GoogleGenerativeAI("AIzaSyC5w7f1akAPKU9g4wRBCLtBv4ppTV7hf3o");
 
 const analyzeTicket = async (ticket) => {
-    try {
-        const model = genAi.getGenerativeModel({ model: "gemini-1.5-flash" });
+  try {
+    const model = genAi.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-        const prompt = `You are an expert AI assistant that processes technical support tickets. 
+    const prompt = `You are an expert AI assistant that processes technical support tickets. 
       Analyze the following ticket:
       Title: ${ticket.title}
       Description: ${ticket.description}
@@ -22,19 +23,34 @@ const analyzeTicket = async (ticket) => {
         "relatedSkills": ["skill1", "skill2"]
       }`;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
-        const jsonString = text.replace(/```json|```/g, "").trim();
+    const jsonString = text.replace(/```json|```/g, "").trim();
 
-        return JSON.parse(jsonString);
+    return JSON.parse(jsonString);
 
 
-    } catch (error) {
-        console.error("AI Analysis Error:", error.message);
-        return null;
-    }
+  } catch (error) {
+    console.error("AI Analysis Error:", error.message);
+    return error;
+  }
+}
+
+export const generateDraftReply = async (ticketDescription, aiNotes) => {
+  const prompt = `
+  You are an expert customer support engineer. Write a professional, empathetic, and concise reply to the following user ticket. 
+    Use the AI Triage Notes to propose a solution if applicable. DO NOT write subject lines.
+    
+    User Issue:
+    ${ticketDescription}
+    Triage Context :
+    ${aiNotes}`;
+
+  const model = genAi.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const result = await model.generateContent(prompt);
+  return result.response.text();
 }
 
 

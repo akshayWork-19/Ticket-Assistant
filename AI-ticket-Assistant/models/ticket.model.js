@@ -19,7 +19,19 @@ const ticketSchema = new mongoose.Schema({
   priority: String,
   deadline: Date,
   helpfulNotes: String,
-  relatedSkills: [String]
+  relatedSkills: [String],
+  responses: [{
+    senderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    senderRole: String,
+    message: String,
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }]
 }, { timestamps: true });
 
 export default mongoose.model('Ticket', ticketSchema);

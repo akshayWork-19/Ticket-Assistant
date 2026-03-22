@@ -15,4 +15,14 @@
      - **Groq**: If you want extreme speed, Groq is the fastest way to run Llama 3 or Mixtral models.
      - **Ollama**: For running models locally on your own machine (free and private).
 
----
+3. **Question**: Why am I getting "Invalid Token: invalid signature"?
+   **Answer**: This happens when the `JWT_SECRET` used to *sign* the token (during Login/Signup) is different from the one used to *verify* it (in Middleware). Ensure both use the exact same string from `.env`.
+
+4. **Question**: Why did my screen go white with "tickets.map is not a function"?
+   **Answer**: React expects `tickets` to be an array so it can loop through them. If the server returns an error object (like `{ error: "..." }`) instead of an array, the `.map()` function doesn't exist on that object, causing a crash.
+
+5. **Question**: What problem are we trying to solve with this application, and who is our audience?
+   **Answer**: 
+   - **Problem**: In small companies, support emails get lost or ignored. Manual sorting (triage) is slow.
+   - **Solution**: We are building an **AI-First Helpdesk**. The AI automatically reads descriptions, determines priority, and notifies the right person immediately via automated workflows (Inngest).
+   - **Audience**: Support teams, SaaS startups, and small dev teams who want "Enterprise-level" triage without hiring 10 support agents.

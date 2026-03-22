@@ -1,5 +1,6 @@
 import { inngest } from "../inngest/client.js";
 import Ticket from "../models/ticket.model.js";
+import { generateDraftReply } from "../utils/conversationAi.js";
 
 export const createTicket = async (req, res) => {
   try {
@@ -52,7 +53,7 @@ export const getTickets = async (req, res) => {
         .sort({ createdAt: -1 });
     } else {
       tickets = await Ticket.find({ createdBy: user._id })
-        .select("title description status createdAt")
+        .select("title description status createdAt responses")
         .sort({ createdAt: -1 });
     }
     // console.log(tickets);
@@ -75,7 +76,7 @@ export const getSingleTicket = async (req, res) => {
         createdBy: user._id,
         _id: req.params.id
       })
-        .select("title description status createdAt priority helpfulNotes relatedSkills assignedTo")
+        .select("title description status createdAt priority helpfulNotes relatedSkills assignedTo responses")
         .populate("assignedTo", ["email", "_id"]); // Add population for 'assignedTo'
     }
 
@@ -89,6 +90,50 @@ export const getSingleTicket = async (req, res) => {
   } catch (error) {
     console.error("Error Fetching Ticket");
     return res.status(500).json({ message: "Internal Error" + error.message })
+  }
+}
+
+
+export const addResponse = async (req, res) => {
+  const { id } = req.params;
+  const { message } = req.body;
+  try {
+    const ticket = await Ticket.findById(id);
+    if (!ticket) {
+      return res.status(404).json({
+        error: "Ticket Not Found!"
+      })
+    }
+    ticket.responses.push({
+      senderId: req.user._id,
+      senderRole: req.user.role,
+      message
+    })
+
+    if (req.user.role === "user") ticket.status = "TODO";
+    await ticket.save();
+
+    return res.status(200).json({
+      success: true,
+      ticket
+    });
+  } catch (error) {
+    return res.status(500).json({
+      error: "Failed to add response!"
+    })
+  }
+}
+
+export const draftAiReply = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const ticket = await Ticket.findById(id);
+    const draft = await generateDraftReply(ticket.description, ticket.helpfulNotes);
+    return res.status(200).json({
+      draft
+    })
+  } catch (error) {
+    return res.status(500).json({ error: "AI Draft Failed" });
   }
 }
 

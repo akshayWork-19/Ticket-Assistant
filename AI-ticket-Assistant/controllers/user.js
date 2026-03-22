@@ -21,7 +21,7 @@ export const signup = async (req, res) => {
         email,
       },
     });
-    console.log("response:",response);
+    console.log("response:", response);
 
     const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET);
     // console.log(user, token);
@@ -78,7 +78,7 @@ export const updateUser = async (req, res) => {
     if (!user) {
       return res.status(401).json({ error: "No User Found!" })
     }
-    await User.updateOne({ email }, { skills: skills.length ? skills : user.skills, role });
+    await User.updateOne({ email }, { skills, role });
 
     return res.status(200).json({ message: "User updated Successfully" })
   } catch (error) {
@@ -98,5 +98,28 @@ export const getUserDetails = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ error: "GetUserDetails Failed!" })
 
+  }
+}
+
+export const updateProfile = async (req, res) => {
+  const { skills, avatarUrl } = req.body;
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found!" });
+    }
+    if (skills !== undefined) user.skills = skills;
+    if (avatarUrl !== undefined) user.avatarUrl = avatarUrl;
+    await user.save();
+
+    return res.status(200).json({
+      message: "Profile updated!",
+      user
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      error: "profile update failed!"
+    })
   }
 }

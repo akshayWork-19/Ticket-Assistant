@@ -1,12 +1,12 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js"
 
-export const authenticate = async (req, res,next) => {
+export const authenticate = async (req, res, next) => {
   // console.log(req.headers);
   const token = req.headers.authorization?.split(" ")[1];
   // console.log(token);
 
-  if (!token) {
+  if (!token || token === 'null') {
     return res.status(401).json({ error: "Access Denied. No Token Found!" });
   }
 

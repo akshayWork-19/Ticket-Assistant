@@ -7,7 +7,9 @@ import TicketDetailsPage from "./pages/TicketDetailsPage";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Admin from "./pages/Admin";
-import Tickets from './pages/tickets';
+import Tickets from './pages/Tickets';
+import Profile from './pages/Profile';
+import { Toaster } from "sonner";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -35,15 +37,21 @@ createRoot(document.getElementById('root')).render(
             <Signup />
           </CheckAuth>}
         />
+
         <Route
           path='/Admin' element={<CheckAuth protected={true}>
             <Admin />
           </CheckAuth>}
         />
-
+        <Route
+          path='/profile' element={<CheckAuth protected={true}>
+            <Profile />
+          </CheckAuth>}
+        />
 
 
       </Routes>
+      <Toaster position="top-center" theme="dark" toastOptions={{ style: { background: '#18181b', color: '#fff', border: '1px solid #27272a' } }} />
     </BrowserRouter>
   </StrictMode>,
 )

@@ -1,2 +1,61 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 @plugin "daisyui";
+
+:root {
+  --background: oklch(20.019% 0.00002 271.152 / 0.649);
+  /* Lighter dark-gray (Zinc-950/900) */
+  --foreground: oklch(0.98 0 0);
+  /* Crisp off-white */
+
+  --card: oklch(0.25 0 0);
+  /* Slightly lighter than background */
+  --card-foreground: oklch(0.98 0 0);
+
+  --primary: oklch(0.98 0 0);
+  /* High contrast white buttons */
+  --primary-foreground: oklch(0.2 0 0);
+
+  --secondary: oklch(0.3 0 0);
+  --secondary-foreground: oklch(0.98 0 0);
+
+  --muted: oklch(0.35 0 0);
+  --muted-foreground: oklch(0.7 0 0);
+
+  --accent: oklch(0.3 0 0);
+  --border: oklch(1 0 0 / 20%);
+  /* More visible borders */
+  --input: oklch(1 0 0 / 20%);
+  --ring: oklch(0.6 0 0);
+
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    /* Restore borders while keeping them subtle */
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Premium Focus States */
+  /* input:focus,
+  textarea:focus {
+    @apply outline-none ring-1 ring-ring border-transparent;
+  } */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+}

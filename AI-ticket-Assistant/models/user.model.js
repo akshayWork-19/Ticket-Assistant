@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
     enum: ["user", "moderator", "admin"]
   },
   skills: [String],
+  avatarUrl: {
+    type: String,
+    default: ""
+  }
 });
 
 export default mongoose.model('User', userSchema);

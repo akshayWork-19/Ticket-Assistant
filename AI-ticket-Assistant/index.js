@@ -10,10 +10,12 @@ import { onUserSignup } from "./inngest/inngest-Functions/on-signup.js";
 import { configDotenv } from "dotenv";
 
 
-configDotenv();
+configDotenv({ path: "./.env" });
 const PORT = process.env.PORT || 3000;
 const app = express();
-app.use(cors({ origin: process.env.ALLOWED_ORIGIN || "http://localhost:5173" }));
+
+// console.log(process.env.ALLOWED_ORIGIN);
+app.use(cors({ origin: process.env.ALLOWED_ORIGIN, credentials: true }));
 
 app.use(express.json({ limit: "5mb" }));
 
@@ -29,7 +31,7 @@ app.use(
 )
 
 
-app.use((err, _, res, _) => {
+app.use((err, _, res, next) => {
 
   console.error("🔥 Global Error:", err.stack);
   res.status(err.status || 500).json({
