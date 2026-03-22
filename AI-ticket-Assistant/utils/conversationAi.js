@@ -1,7 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-console.log(process.env.GEMINI_API_KEY);
-const genAi = new GoogleGenerativeAI("AIzaSyC5w7f1akAPKU9g4wRBCLtBv4ppTV7hf3o");
+const genAi = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const analyzeTicket = async (ticket) => {
   try {
