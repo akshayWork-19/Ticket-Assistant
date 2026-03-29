@@ -10,7 +10,7 @@ import { onUserSignup } from "./inngest/inngest-Functions/on-signup.js";
 import { configDotenv } from "dotenv";
 
 
-configDotenv({ path: "./.env" });
+configDotenv();
 const PORT = process.env.PORT || 3000;
 const app = express();
 
@@ -40,6 +40,7 @@ app.use((err, _, res, next) => {
 
   });
 });
+console.log(process.env.MONGO_URI);
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
