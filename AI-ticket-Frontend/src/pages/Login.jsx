@@ -33,7 +33,7 @@ function Login() {
         toast.success("Logged in successfully!");
         navigate('/');
       } else {
-        toast.error(data.message || "Login Failed!");
+        toast.error(data.message || data.error || "Login Failed!");
       }
     } catch (error) {
       toast.error("Login-something went wrong");
