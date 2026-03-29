@@ -1,0 +1,48 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+# --Backend Pipeline --
+
+build_backend:
+  stage: build
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  script:
+    - cd AI-ticket-Assistant
+
+# Login (Uses Gitlab's internal automated CI tokens, no manual prep needed)
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY 
+    - docker build -t $CI_REGISTRY_IMAGE/backend:latest .
+    - docker push $CI_REGISTRY_IMAGE/backend:latest
+  only:
+    - main
+
+test_backend:
+  stage: test
+  image: node:18-alpine
+  script:
+    - cd AI-ticket-Assistant
+    - npm install
+  only:
+    - merge_requests
+    - main
+
+build_frontend:
+  stage: build
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  script:
+    - cd AI-ticket-Frontend
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY 
+    - docker build --build-arg VITE_API_URL=$CI_ENV_VITE_API_URL -t $CI_REGISTRY_IMAGE/frontend:latest .
+    - docker push $CI_REGISTRY_IMAGE/frontend:latest
+  only:
+    - main

@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./AI-ticket-Assistant
+      dockerfile: Dockerfile
+    container_name: ticket_backend
+    ports:
+      - "4000:4000"
+    restart: unless-stopped
+    env_file:
+      - ./AI-ticket-Assistant/.env
+
+  inngest:
+    image: inngest/inngest:latest
+    container_name: ticket_inngest
+    command: "inngest dev -u http://backend:4000/api/inngest"
+    ports:
+      - "8288:8288"
+    depends_on:
+      - backend
+
+  frontend:
+    build:
+      context: ./AI-ticket-Frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:4000/api
+    container_name: ticket_frontend
+    ports:
+      - "80:80"
+      - "5173:80"
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
+
+
