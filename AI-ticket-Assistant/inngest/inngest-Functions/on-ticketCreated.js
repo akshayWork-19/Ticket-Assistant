@@ -12,15 +12,17 @@ export const onTicketCreation = inngest.createFunction(
 
   async ({ event, step }) => {
     const { ticketId } = event.data;
-    // console.log("ticketId:", ticketId);
+    console.log("🎫 Inngest: onTicketCreation triggered for:", ticketId);
+
     //fetch ticket from DB
     const ticket = await step.run("fetch-ticket", async () => {
+      console.log("🔍 Fetching ticket details...");
       const ticketObject = await Ticket.findById(ticketId);
-      // console.log("ticketObject:", ticketObject);
       if (!ticketObject) {
+        console.error("❌ Ticket not found in DB:", ticketId);
         throw new NonRetriableError("Ticket Not Found!");
       }
-      return ticketObject;
+      return ticketObject.toObject();
     })
 
     await step.run("update-ticket-status", async () => {
@@ -66,8 +68,8 @@ export const onTicketCreation = inngest.createFunction(
 
 
     const moderator = await step.run("assign-moderator", async () => {
-      const skillsToMatch = Array.isArray(relatedskills) && relatedskills.length > 0 
-        ? relatedskills.join("|") 
+      const skillsToMatch = Array.isArray(relatedskills) && relatedskills.length > 0
+        ? relatedskills.join("|")
         : "general";
 
       let user = await User.findOne({
