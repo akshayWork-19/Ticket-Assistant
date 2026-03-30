@@ -4,7 +4,7 @@ const genAi = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const analyzeTicket = async (ticket) => {
   try {
-    const model = genAi.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAi.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `You are an expert AI assistant that processes technical support tickets. 
       Analyze the following ticket:
@@ -26,14 +26,18 @@ const analyzeTicket = async (ticket) => {
     const response = await result.response;
     const text = response.text();
 
-    const jsonString = text.replace(/```json|```/g, "").trim();
+    // Robust JSON extraction
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error("No JSON found in AI response");
+    }
 
-    return JSON.parse(jsonString);
+    return JSON.parse(jsonMatch[0]);
 
 
   } catch (error) {
     console.error("AI Analysis Error:", error.message);
-    return error;
+    throw error; // Throw so Inngest can handle/retry properly
   }
 }
 
@@ -47,7 +51,7 @@ export const generateDraftReply = async (ticketDescription, aiNotes) => {
     Triage Context :
     ${aiNotes}`;
 
-  const model = genAi.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const model = genAi.getGenerativeModel({ model: "gemini-1.5-flash" });
   const result = await model.generateContent(prompt);
   return result.response.text();
 }

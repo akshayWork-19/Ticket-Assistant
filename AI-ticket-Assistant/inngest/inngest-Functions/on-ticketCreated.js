@@ -31,34 +31,50 @@ export const onTicketCreation = inngest.createFunction(
     // const aiResponse = await analyzeTicket(ticket);
 
     const aiResponse = await step.run("call-ai-triage", async () => {
-      return analyzeTicket(ticket);
+      try {
+        return await analyzeTicket(ticket);
+      } catch (error) {
+        console.error("AI Triage Failed:", error.message);
+        return null;
+      }
     });
 
     const relatedskills = await step.run("ai-processing", async () => {
       let skills = [];
-      if (aiResponse) {
+      if (aiResponse && typeof aiResponse === 'object') {
         await Ticket.findByIdAndUpdate(ticket._id, {
-          priority: !["low", "medium", "high"].includes(aiResponse.priority)
+          priority: !["low", "medium", "high"].includes(aiResponse.priority?.toLowerCase())
             ? "medium"
-            : aiResponse.priority,
-          helpfulNotes: aiResponse.helpfulNotes,
+            : aiResponse.priority.toLowerCase(),
+          helpfulNotes: aiResponse.helpfulNotes || "AI was unable to generate notes for this ticket.",
           status: "IN_PROGRESS",
-          relatedSkills: aiResponse.relatedSkills,
+          relatedSkills: Array.isArray(aiResponse.relatedSkills) ? aiResponse.relatedSkills : [],
         }, {
           new: true
         });
-        skills = aiResponse.relatedSkills;
+        skills = Array.isArray(aiResponse.relatedSkills) ? aiResponse.relatedSkills : [];
+      } else {
+        // Fallback if AI fails completely
+        await Ticket.findByIdAndUpdate(ticket._id, {
+          priority: "medium",
+          helpfulNotes: "Automated triage failed. Manual review required.",
+          status: "TODO"
+        });
       }
       return skills;
     });
 
 
     const moderator = await step.run("assign-moderator", async () => {
+      const skillsToMatch = Array.isArray(relatedskills) && relatedskills.length > 0 
+        ? relatedskills.join("|") 
+        : "general";
+
       let user = await User.findOne({
         role: "moderator",
         skills: {
           $elemMatch: {
-            $regex: relatedskills.join("|"),
+            $regex: skillsToMatch,
             $options: "i",
           },
         },

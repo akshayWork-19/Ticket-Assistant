@@ -1,6 +1,10 @@
 # 🎫 Ticket AI: Next-Gen AI-Powered Ticketing System
 
-**Ticket AI** is a premium, high-performance customer support platform that leverages **Google Gemini** and **Inngest** to automate the entire ticket lifecycle—from triage to resolution.
+**Ticket AI** is an AI-powered customer support platform automating ticket triage, skill-based routing, and response drafting using Google Gemini 1.5 Flash — built to feel and perform like a production SaaS tool.
+
+Decoupled AI and email workflows using Inngest event-driven architecture, keeping Express response times at 20–50ms; optimized MongoDB queries via field projection and selective `.populate()` to prevent N+1 issues and reduce payload size. 
+
+Built a high-performance React 18 + Vite frontend with skeleton loaders for zero layout shift, live AI triage state indicators, and role-based UI — architected for horizontal scaling via stateless JWT auth and MongoDB Atlas indexing.
 
 ---
 
@@ -12,17 +16,20 @@
 - **💬 GitHub-Style Resolution Thread**: A professional, boxed message interface for clear and intuitive two-way communication between users and support staff.
 - **📊 Real-Time Intelligence Dashboard**: A glassmorphic admin interface featuring live ticket tracking, priority filtering, and message reply indicators.
 - **🏗️ Reliable Event-Driven Architecture**: Powered by **Inngest** for guaranteed background job execution, retries, and real-time observability.
-- **✨ Premium UI/UX**: Built with **React** and **Tailwind CSS**, featuring dark mode, glassmorphism, smooth animations, and **Shadcn UI** components.
-- **🔒 Secure Role-Based Access**: Granular permissions for Users, Moderators, and Administrators to manage workflows effectively.
+- **✨ Premium UI/UX**: Built with **React** and **Tailwind CSS**, featuring feature highlight grids, dark mode, glassmorphism, smooth animations, and **Shadcn UI** components.
+- **🔒 Secure Role-Based Access**: Granular permissions for Users, Moderators, and Administrators to manage workflows effectively with robust error handling for user registration.
+- **📈 Advanced Admin Operations**: Upgraded dashboard visibility with comprehensive view modals and automated Google Sheets sync (IST timestamps).
+- **🗄️ Optimized Data Access**: Implemented Mongoose `.lean()` and selective `.populate()` reducing payload sizes and preventing N+1 queries.
 
 ---
 
 ## 🛠️ Modern Tech Stack
 
-- **Frontend**: `React 18`, `Vite`, `Tailwind CSS`, `Lucide Icons`, `Sonner Toasts`.
-- **Backend**: `Node.js`, `Express`, `Mongoose`, `JWT Authentication`.
+- **Frontend**: `React 18`, `Vite`, `Tailwind CSS`, `Lucide Icons`, `Sonner Toasts`, `Vercel` (Hosting).
+- **Backend**: `Node.js`, `Express`, `Mongoose`, `JWT Authentication`, `Railway` (Hosting).
 - **Cloud/AI**: `Google Generative AI (Gemini SDK)`, `Inngest` (Event-driven background processes).
-- **Communication**: `Nodemailer`.
+- **Database**: `MongoDB Atlas` (Optimized via indexing and lean queries).
+- **Communication & Data Sync**: `Nodemailer`, `Google Sheets API`.
 
 ---
 
