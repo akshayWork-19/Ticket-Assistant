@@ -10,6 +10,7 @@ import Admin from "./pages/Admin";
 import Tickets from './pages/Tickets';
 import Profile from './pages/Profile';
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/react"
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -52,6 +53,7 @@ createRoot(document.getElementById('root')).render(
 
       </Routes>
       <Toaster position="top-center" theme="dark" toastOptions={{ style: { background: '#18181b', color: '#fff', border: '1px solid #27272a' } }} />
+      <Analytics />
     </BrowserRouter>
   </StrictMode>,
 )
