@@ -4,7 +4,7 @@ const genAi = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const analyzeTicket = async (ticket) => {
   try {
-    const model = genAi.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAi.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
 
     const prompt = `You are an expert AI assistant that processes technical support tickets. 
       Analyze the following ticket:
@@ -51,7 +51,7 @@ export const generateDraftReply = async (ticketDescription, aiNotes) => {
     Triage Context :
     ${aiNotes}`;
 
-  const model = genAi.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = genAi.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
   const result = await model.generateContent(prompt);
   return result.response.text();
 }
