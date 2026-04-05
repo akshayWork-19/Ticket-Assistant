@@ -19,7 +19,7 @@ function CheckAuth({ children, protectedRoute }) {
       }
     } else {
       // 2. Logic for NON-PROTECTED Routes (like /login, /register)
-      if (token && (location.pathname === '/login' || (location.pathname === '/Signup' || location.pathname === '/Signup'))) {
+      if (token && (location.pathname === '/login' || location.pathname === '/signup')) {
         navigate("/dashboard");
       } else {
         // For all other public pages (like /Admin, if it's meant to be public but accessible to everyone)

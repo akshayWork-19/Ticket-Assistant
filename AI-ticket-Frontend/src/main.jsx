@@ -25,34 +25,34 @@ createRoot(document.getElementById('root')).render(
         />
         <Route
           path='/dashboard' element={
-            <CheckAuth protected={true}>
+            <CheckAuth protectedRoute={true}>
               <Tickets />
             </CheckAuth>
           }
         />
         <Route
-          path='/tickets/:id' element={<CheckAuth protected={true}>
+          path='/tickets/:id' element={<CheckAuth protectedRoute={true}>
             <TicketDetailsPage />
           </CheckAuth>}
         />
         <Route
-          path='/login' element={<CheckAuth protected={false}>
+          path='/login' element={<CheckAuth protectedRoute={false}>
             <Login />
           </CheckAuth>}
         />
         <Route
-          path='/Signup' element={<CheckAuth protected={false}>
+          path='/signup' element={<CheckAuth protectedRoute={false}>
             <Signup />
           </CheckAuth>}
         />
 
         <Route
-          path='/Admin' element={<CheckAuth protected={true}>
+          path='/admin' element={<CheckAuth protectedRoute={true}>
             <Admin />
           </CheckAuth>}
         />
         <Route
-          path='/profile' element={<CheckAuth protected={true}>
+          path='/profile' element={<CheckAuth protectedRoute={true}>
             <Profile />
           </CheckAuth>}
         />
