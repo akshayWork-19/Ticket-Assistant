@@ -12,12 +12,19 @@ import Profile from './pages/Profile';
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/react"
 
+import Landing from "./pages/Landing";
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
         <Route
           path='/' element={
+            <Landing />
+          }
+        />
+        <Route
+          path='/dashboard' element={
             <CheckAuth protected={true}>
               <Tickets />
             </CheckAuth>

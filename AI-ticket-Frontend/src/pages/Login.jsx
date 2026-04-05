@@ -1,9 +1,11 @@
 import React from 'react'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardAction, CardFooter, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Card, CardContent, CardFooter } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import { toast } from 'sonner';
+import { Ticket, Github, Chrome, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react';
+import DashboardImg from "../assets/Dashboard.png";
 
 function Login() {
   const navigate = useNavigate();
@@ -26,7 +28,6 @@ function Login() {
         body: JSON.stringify(form)
       })
       const data = await res.json();
-      console.log(data);
       if (res.ok) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
@@ -44,107 +45,102 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen w-full lg:grid lg:grid-cols-2 bg-background">
+    <div className="min-h-screen w-full lg:grid lg:grid-cols-[1fr_1.2fr] bg-[#020203] text-white">
 
-      <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto w-full max-w-sm space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 ">
-          <div className="mx-auto w-full max-w-sm space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="space-y-2 text-center">
-              <h1 className="text-3xl font-bold tracking-tight text-white/90">Welcome Back</h1>
-              <p className="text-muted-foreground text-sm">
-                Enter your credentials to access your workspace
-              </p>
+      {/* Left Column - Form */}
+      <div className="flex flex-col items-center justify-center py-12 px-8 sm:px-12 lg:px-20 relative overflow-hidden">
+        {/* Abstract Glow */}
+        <div className="absolute top-0 left-0 w-full h-full bg-primary/5 blur-[100px] rounded-full -z-10 translate-x-[-30%] translate-y-[-30%]" />
+
+        <div className="w-full max-w-sm space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+          {/* Logo & Header */}
+          <div className="space-y-6">
+            <Link to="/" className="flex items-center gap-2 group w-fit">
+              <div className="bg-primary/20 text-primary p-2 rounded-xl group-hover:scale-110 transition-transform">
+                <Ticket className="h-5 w-5" />
+              </div>
+              <span className="font-bold text-lg tracking-tight">Ticket AI</span>
+            </Link>
+            
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">Welcome back</h1>
+              <p className="text-white/40 text-sm font-medium">Log in to your account to continue.</p>
+            </div>
+          </div>
+
+          {/* Login Form */}
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">Email Address</label>
+                <input 
+                  type="email" 
+                  name="email" 
+                  placeholder='name@example.com' 
+                  className='flex h-12 w-full rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2 text-sm text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 transition-all focus:border-primary/30' 
+                  value={form.email} 
+                  onChange={handleChange} 
+                  required 
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between ml-1">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-white/40">Password</label>
+                  <a href="#" className="text-[10px] font-bold text-primary/60 hover:text-primary transition-colors">Forgot password?</a>
+                </div>
+                <input 
+                  type="password" 
+                  name="password" 
+                  placeholder='••••••••' 
+                  className='flex h-12 w-full rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2 text-sm text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 transition-all focus:border-primary/30' 
+                  value={form.password} 
+                  onChange={handleChange} 
+                  required 
+                />
+              </div>
             </div>
 
+            <Button type="submit" disabled={loading} className="w-full h-12 font-bold rounded-xl bg-white text-black hover:bg-white/90 transition-all active:scale-95 shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]">
+              {loading ? "Verifying..." : "Sign In"}
+            </Button>
 
-
-          </div>
-          <Card className="w-full max-w-sm border-border bg-indigo-950 shadow-xl/30">
-            <form onSubmit={handleLogin}>
-              <CardContent className="space-y-5 pt-3 pb-3">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    Email
-                  </label>
-                  <input type="email" name="email" placeholder='name@example.com' className='flex h-10 w-full rounded-md border border-border/50 bg-background/50 px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 transition-all' value={form.email} onChange={handleChange} required />
-                </div>
-
-                <div className="space-y-2 pb-3">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                      Password
-                    </label>
-                    <a href="#" className="text-[10px] font-semibold text-primary/80 hover:text-primary transition-colors">Forgot password?</a>
-                  </div>
-                  <input type="password" name="password" placeholder='••••••••' className='flex h-10 w-full rounded-md border border-border/50 bg-background/50 px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 transition-all' value={form.password} onChange={handleChange} required />
-                </div>
-              </CardContent>
-              <CardFooter className="flex flex-col gap-2 pb-6">
-                <Button type="submit" disabled={loading} className="w-2/3 font-bold uppercase tracking-tighter">
-                  {loading ? "Verifying..." : "Sign In"}
-                </Button>
-                <div className="text-center text-xs text-muted-foreground">
-                  Don&apos;t have an account?{" "}
-                  <Button variant="link" className="p-0 h-auto font-semibold text-primary" onClick={(e) => { e.preventDefault(); navigate('/signup'); }}>
-                    Sign Up
-
-                  </Button>
-
-                </div>
-              </CardFooter>
-            </form>
-          </Card>
+            <p className="text-center text-xs text-white/30 font-medium">
+              Don&apos;t have an account?{" "}
+              <Link to="/signup" className="text-primary hover:text-primary/80 transition-colors font-bold underline underline-offset-4 decoration-primary/30">
+                Create account
+              </Link>
+            </p>
+          </form>
         </div>
       </div>
 
-      <div className="hidden lg:block relative bg-muted/10 border-l border-border/10 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background z-10">
-        </div>
-
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-20 p-12">
-          <div className="text-center space-y-8 max-w-md animate-in fade-in zoom-in-95 duration-700 delay-150">
-            <div className="inline-flex items-center justify-center rounded-2xl bg-primary/10 p-5 shadow-inner ring-1 ring-primary/20">
-              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /><path d="m9 15 2 2 4-4" /></svg>
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-white/90 tracking-tight">AI-Powered Support</h2>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Triage, prioritize, and resolve customer tickets faster than ever using our intelligence engine.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 text-left">
-              <div className="flex items-start gap-3 rounded-xl bg-white/5 border border-border/20 p-4">
-                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/20">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white/80">Instant AI Triage</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Every ticket is automatically categorized, prioritized, and assigned the moment it arrives.</p>
-                </div>
+      {/* Right Column - Immersive Visual */}
+      <div className="hidden lg:flex relative bg-[#010102] border-l border-white/5 items-center justify-center p-12 overflow-hidden">
+        {/* Immersive Background Elements */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+        
+        <div className="relative z-10 w-full max-w-2xl animate-in fade-in zoom-in-95 duration-1000">
+           <div className="mb-12 space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold tracking-widest uppercase text-primary">
+                 <ShieldCheck className="h-3 w-3" /> Secure Access
               </div>
+              <h2 className="text-5xl font-bold tracking-tight bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent leading-tight">
+                 Support at the speed <br /> of intelligence.
+              </h2>
+           </div>
 
-              <div className="flex items-start gap-3 rounded-xl bg-white/5 border border-border/20 p-4">
-                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/20">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white/80">Smart Draft Replies</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">AI generates context-aware reply drafts so your agents resolve issues in record time.</p>
-                </div>
+           <div className="relative group/image">
+              <div className="absolute -inset-4 bg-primary/10 blur-3xl rounded-[32px] opacity-0 group-hover/image:opacity-100 transition-opacity duration-1000" />
+              <div className="relative border border-white/10 rounded-2xl overflow-hidden bg-black shadow-2xl scale-100 hover:scale-[1.02] transition-transform duration-700">
+                 <div className="flex items-center gap-1.5 px-4 h-10 border-b border-white/10 bg-white/[0.02]">
+                    <div className="h-2 w-2 rounded-full bg-white/10" />
+                    <div className="h-2 w-2 rounded-full bg-white/10" />
+                    <div className="h-2 w-2 rounded-full bg-white/10" />
+                 </div>
+                 <img src={DashboardImg} alt="Platform Dashboard" className="w-full h-auto opacity-80 group-hover/image:opacity-100 transition-opacity duration-700" />
               </div>
-
-              <div className="flex items-start gap-3 rounded-xl bg-white/5 border border-border/20 p-4">
-                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/20">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white/80">Role-Based Access</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Secure, admin-controlled permissions so the right people see the right tickets — always.</p>
-                </div>
-              </div>
-            </div>
-          </div>
+           </div>
         </div>
       </div>
 

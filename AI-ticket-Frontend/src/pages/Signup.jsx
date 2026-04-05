@@ -1,9 +1,11 @@
 import React from 'react'
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState } from 'react';
 import { Card, CardContent, CardFooter } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import { toast } from 'sonner';
+import { Ticket, Github, Chrome, Zap, Sparkles, Target } from 'lucide-react';
+import AiTriageImg from "../assets/ai-triage.png";
 
 function Signup() {
   const navigate = useNavigate();
@@ -25,7 +27,6 @@ function Signup() {
         },
         body: JSON.stringify(form),
       })
-      console.log(res);
       const data = await res.json();
       if (res.ok) {
         localStorage.setItem("token", data.token);
@@ -44,103 +45,99 @@ function Signup() {
   }
 
   return (
-    <div className="min-h-screen w-full lg:grid lg:grid-cols-2 bg-background">
+    <div className="min-h-screen w-full lg:grid lg:grid-cols-[1fr_1.2fr] bg-[#020203] text-white">
+      
       {/* Left Column - Form */}
-      <div className="flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto w-full max-w-sm space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <div className="space-y-2 text-center">
-            <h1 className="text-3xl font-bold tracking-tight text-white/90">Create an account</h1>
-            <p className="text-muted-foreground text-sm">
-              Enter your email below to join early access
-            </p>
+      <div className="flex flex-col items-center justify-center py-12 px-8 sm:px-12 lg:px-20 relative overflow-hidden">
+        {/* Abstract Glow */}
+        <div className="absolute top-0 left-0 w-full h-full bg-primary/5 blur-[100px] rounded-full -z-10 translate-x-[-30%] translate-y-[-30%]" />
+
+        <div className="w-full max-w-sm space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-1000">
+          {/* Logo & Header */}
+          <div className="space-y-6">
+            <Link to="/" className="flex items-center gap-2 group w-fit">
+              <div className="bg-primary/20 text-primary p-2 rounded-xl group-hover:scale-110 transition-transform">
+                <Ticket className="h-5 w-5" />
+              </div>
+              <span className="font-bold text-lg tracking-tight">Ticket AI</span>
+            </Link>
+            
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">Create account</h1>
+              <p className="text-white/40 text-sm font-medium">Join the next generation of support.</p>
+            </div>
           </div>
 
-          <Card className="w-full max-w-sm border-border bg-indigo-950 shadow-xl/30">
-            <form onSubmit={handleSignup}>
-              <CardContent className="space-y-5 pt-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    Email
-                  </label>
-                  <input type="email" name="email" placeholder='name@example.com' className='flex h-10 w-full rounded-md border border-border/50 bg-background/50 px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 transition-all' value={form.email} onChange={handleChange} required />
-                </div>
+          {/* Signup Form */}
+          <form onSubmit={handleSignup} className="space-y-6">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">Email Address</label>
+                <input 
+                  type="email" 
+                  name="email" 
+                  placeholder='name@example.com' 
+                  className='flex h-12 w-full rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2 text-sm text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 transition-all focus:border-primary/30' 
+                  value={form.email} 
+                  onChange={handleChange} 
+                  required 
+                />
+              </div>
 
-                <div className="space-y-2 pb-3">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                      Password
-                    </label>
-                    <a href="#" className="text-[10px] font-semibold text-primary/80 hover:text-primary transition-colors">Forgot password?</a>
-                  </div>
-                  <input type="password" name="password" placeholder='••••••••' className='flex h-10 w-full rounded-md border border-border/50 bg-background/50 px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 transition-all' value={form.password} onChange={handleChange} required />
-                </div>
-              </CardContent>
-              <CardFooter className="flex flex-col gap-4 pb-6">
-                <Button type="submit" disabled={loading} className="w-full font-bold uppercase tracking-tighter">
-                  {loading ? "Creating account..." : "Sign Up"}
-                </Button>
-                <div className="text-center text-xs text-muted-foreground">
-                  Already have an account?{" "}
-                  <Button variant="link" className="p-0 h-auto font-semibold text-primary" onClick={(e) => { e.preventDefault(); navigate('/login'); }}>
-                    Log in
-                  </Button>
-                </div>
-              </CardFooter>
-            </form>
-          </Card>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">Password</label>
+                <input 
+                  type="password" 
+                  name="password" 
+                  placeholder='••••••••' 
+                  className='flex h-12 w-full rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2 text-sm text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 transition-all focus:border-primary/30' 
+                  value={form.password} 
+                  onChange={handleChange} 
+                  required 
+                />
+              </div>
+            </div>
+
+            <Button type="submit" disabled={loading} className="w-full h-12 font-bold rounded-xl bg-white text-black hover:bg-white/90 transition-all active:scale-95 shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]">
+              {loading ? "Creating account..." : "Sign Up"}
+            </Button>
+
+            <p className="text-center text-xs text-white/30 font-medium">
+              Already have an account?{" "}
+              <Link to="/login" className="text-primary hover:text-primary/80 transition-colors font-bold underline underline-offset-4 decoration-primary/30">
+                Log in
+              </Link>
+            </p>
+          </form>
         </div>
       </div>
 
-      {/* Right Column - Illustration Placeholder */}
-      <div className="hidden lg:block relative bg-muted/10 border-l border-border/10 overflow-hidden">
-        {/* Subtle Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-background to-background z-10"></div>
-
-        {/* Content Container */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-20 p-12">
-          <div className="text-center space-y-8 max-w-md animate-in fade-in zoom-in-95 duration-700 delay-150">
-            <div className="inline-flex items-center justify-center rounded-2xl bg-secondary/20 p-5 shadow-inner ring-1 ring-secondary/30">
-              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground"><circle cx="12" cy="12" r="10" /><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" /><path d="M2 12h20" /></svg>
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-3xl font-bold text-white/90 tracking-tight">Scale Your Support</h2>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Join thousands of modern startups utilizing AI to automate their helpdesk and keep customers happy.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 text-left">
-              <div className="flex items-start gap-3 rounded-xl bg-white/5 border border-border/20 p-4">
-                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/20">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" /></svg>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white/80">Enterprise Security</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Built with data privacy in mind. We ensure your customer interactions remain private and secure.</p>
-                </div>
+      {/* Right Column - Immersive Visual */}
+      <div className="hidden lg:flex relative bg-[#010103] border-l border-white/5 items-center justify-center p-12 overflow-hidden">
+        {/* Immersive Background Elements */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+        
+        <div className="relative z-10 w-full max-w-2xl animate-in fade-in zoom-in-95 duration-1000">
+           <div className="mb-12 space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold tracking-widest uppercase text-primary">
+                 <Target className="h-3 w-3" /> Precision Triage
               </div>
+              <h2 className="text-5xl font-bold tracking-tight bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent leading-tight">
+                 Automate the <br /> triage bottleneck.
+              </h2>
+           </div>
 
-              <div className="flex items-start gap-3 rounded-xl bg-white/5 border border-border/20 p-4">
-                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/20">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white/80">Smart Insights</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Gain deep understanding of customer pain points with AI-generated trend analysis and reports.</p>
-                </div>
+           <div className="relative group/image">
+              <div className="absolute -inset-4 bg-primary/10 blur-3xl rounded-[32px] opacity-0 group-hover/image:opacity-100 transition-opacity duration-1000" />
+              <div className="relative border border-white/10 rounded-2xl overflow-hidden bg-black shadow-2xl scale-100 hover:scale-[1.02] transition-transform duration-700">
+                 <div className="flex items-center gap-1.5 px-4 h-10 border-b border-white/10 bg-white/[0.02]">
+                    <div className="h-2 w-2 rounded-full bg-white/10" />
+                    <div className="h-2 w-2 rounded-full bg-white/10" />
+                    <div className="h-2 w-2 rounded-full bg-white/10" />
+                 </div>
+                 <img src={AiTriageImg} alt="AI Triage Intelligence" className="w-full h-auto opacity-80 group-hover/image:opacity-100 transition-opacity duration-700" />
               </div>
-
-              <div className="flex items-start gap-3 rounded-xl bg-white/5 border border-border/20 p-4">
-                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/20">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white/80">Collaborative Workflow</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Seamlessly hand off complex issues from AI to human agents without losing context.</p>
-                </div>
-              </div>
-            </div>
-          </div>
+           </div>
         </div>
       </div>
     </div>

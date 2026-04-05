@@ -19,9 +19,8 @@ function CheckAuth({ children, protectedRoute }) {
       }
     } else {
       // 2. Logic for NON-PROTECTED Routes (like /login, /register)
-      if (token && (location.pathname === '/login' || location.pathname === '/register')) {
-        // ONLY redirect to home if the user is logged in AND trying to access the login/register pages.
-        navigate("/");
+      if (token && (location.pathname === '/login' || (location.pathname === '/Signup' || location.pathname === '/Signup'))) {
+        navigate("/dashboard");
       } else {
         // For all other public pages (like /Admin, if it's meant to be public but accessible to everyone)
         // OR if the user is not logged in on /login, allow them to view the children.

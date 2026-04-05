@@ -30,13 +30,12 @@ export default function Navbar() {
               <Ticket className="h-4 w-4" />
             </div>
             <span className="font-bold tracking-tight text-white/90 group-hover:text-white transition-colors">Ticket AI</span>
-
           </Link>
 
           {token && (
             <div className="hidden md:flex items-center gap-6 ml-4">
-              <Link to="/"
-                className={`text-sm font-semibold transition-colors hover:text-white ${isActive('/') ? 'text-white' : 'text-muted-foreground'}`}>
+              <Link to="/dashboard"
+                className={`text-sm font-semibold transition-colors hover:text-white ${isActive('/dashboard') ? 'text-white' : 'text-muted-foreground'}`}>
                 Dashboard
               </Link>
               {user?.role === "admin" && (
@@ -55,10 +54,14 @@ export default function Navbar() {
           {!token ? (
             <>
               <Link to="/login">
-                <Button variant="ghost" size="sm" className="font-semibold text-muted-foreground hover:text-white">Login</Button>
+                <Button variant="outline" size="sm" className="px-5 h-9 text-[11px] font-semibold rounded-full border-white/10 hover:border-white/20 hover:bg-white/10 transition-all">
+                  Log In
+                </Button>
               </Link>
               <Link to="/Signup">
-                <Button size="sm" className="font-bold uppercase tracking-wider text-[10px]">Sign Up</Button>
+                <Button size="sm" className="px-5 h-9 text-[11px] font-bold rounded-full bg-white text-black hover:bg-white/90 transition-all hover:scale-105 active:scale-95">
+                  Sign Up
+                </Button>
               </Link>
             </>
           ) : (
