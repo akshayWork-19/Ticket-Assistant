@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../Components/Navbar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../Components/ui/card';
 import { Button } from '../Components/ui/button';
@@ -18,7 +18,7 @@ export default function Profile() {
     const [loading, setLoading] = useState(false);
 
     // Sync state when user object loads/changes
-    React.useEffect(() => {
+    useEffect(() => {
         if (user) {
             setSkills(user.skills?.join(', ') || '');
             setAvatarUrl(user.avatarUrl || '');

@@ -33,8 +33,9 @@ export const signup = async (req, res) => {
       console.error("Inngest send failed but user was created:", inngestErr);
     }
 
-    const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET);
-    return res.json({ user, token });
+    const { password, ...safeUser } = user.toObject();
+    const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '2d' });
+    return res.json({ user: safeUser, token });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Signup Failed", details: error.message });
@@ -44,19 +45,16 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-  
+
   if (!email || !password) {
     return res.status(400).json({ message: "Email and password are required" });
   }
 
   try {
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "User Not Found!" });
-    }
-    const passwordMatched = await bcrypt.compare(password, user.password);
-    if (!passwordMatched) {
-      return res.status(401).json({ message: "Invalid Credentials!" });
+    const passwordMatched = user && await bcrypt.compare(password, user.password);
+    if (!user || !passwordMatched) {
+      return res.status(401).json({ message: "Invalid email or password." });
     }
     const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET);
     return res.json({ user, token });
@@ -66,21 +64,21 @@ export const login = async (req, res) => {
 }
 
 
-export const logout = async (req, res) => {
-  try {
-    const token = req.headers.authorization.split(" ")[1];
-    if (!token) {
-      return res.status(401).json({ error: "Unauthorized!" })
-    }
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-      if (err) {
-        return res.status(401).json({ error: err.message })
-      }
-    })
-  } catch (error) {
-    return res.status(500).json({ error: "Login Failed", details: error.message });
-  }
-}
+// export const logout = async (req, res) => {
+//   try {
+//     const token = req.headers.authorization.split(" ")[1];
+//     if (!token) {
+//       return res.status(401).json({ error: "Unauthorized!" })
+//     }
+//     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+//       if (err) {
+//         return res.status(401).json({ error: err.message })
+//       }
+//     })
+//   } catch (error) {
+//     return res.status(500).json({ error: "Login Failed", details: error.message });
+//   }
+// }
 
 export const updateUser = async (req, res) => {
   const { skills = [], email, role } = req.body;
@@ -111,7 +109,6 @@ export const getUserDetails = async (req, res) => {
     return res.status(200).json({ AllUsers: users });
   } catch (error) {
     return res.status(500).json({ error: "GetUserDetails Failed!" })
-
   }
 }
 

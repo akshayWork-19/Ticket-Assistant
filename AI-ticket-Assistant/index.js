@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express"
 import mongoose from "mongoose"
 import cors from "cors";
@@ -7,10 +8,9 @@ import ticketRoutes from "./routes/tickets.js";
 import { inngest } from "./inngest/client.js";
 import { onTicketCreation } from "./inngest/inngest-Functions/on-ticketCreated.js";
 import { onUserSignup } from "./inngest/inngest-Functions/on-signup.js";
-import { configDotenv } from "dotenv";
 
 
-configDotenv();
+// configDotenv();
 const PORT = process.env.PORT || 3000;
 const app = express();
 

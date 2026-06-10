@@ -1,30 +1,28 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 
-const genAi = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// console.log(process.env.GROQ_API_KEY);
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const analyzeTicket = async (ticket) => {
   try {
-    const model = genAi.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
+    const completion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert AI assistant that processes technical support tickets. 
+          Analyze the ticket and provide a summary, priority (low, medium, high), helpful notes for moderators, and relevant technical skills.
+          IMPORTANT: You MUST respond with ONLY a valid JSON object.`
+        },
+        {
+          role: "user",
+          content: `Title: ${ticket.title}\nDescription: ${ticket.description}`
+        }
+      ],
+      model: "llama-3.3-70b-versatile",
+      response_format: { type: "json_object" },
+    });
 
-    const prompt = `You are an expert AI assistant that processes technical support tickets. 
-      Analyze the following ticket:
-      Title: ${ticket.title}
-      Description: ${ticket.description}
-      Your job is to:
-      1. Summarize the issue.
-      2. Estimate its priority (low, medium, high).
-      3. Provide helpful notes for human moderators.
-      4. List relevant technical skills required for this ticket as an array of strings.
-      IMPORTANT: Respond with ONLY a valid JSON object in this format:
-      {
-        "priority": "string",
-        "helpfulNotes": "string",
-        "relatedSkills": ["skill1", "skill2"]
-      }`;
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const text = completion.choices[0].message.content;
 
     // Robust JSON extraction
     const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -34,27 +32,33 @@ const analyzeTicket = async (ticket) => {
 
     return JSON.parse(jsonMatch[0]);
 
-
   } catch (error) {
-    console.error("AI Analysis Error:", error.message);
-    throw error; // Throw so Inngest can handle/retry properly
+    console.error("Groq Analysis Error:", error.message);
+    throw error;
   }
 }
 
 export const generateDraftReply = async (ticketDescription, aiNotes) => {
-  const prompt = `
-  You are an expert customer support engineer. Write a professional, empathetic, and concise reply to the following user ticket. 
-    Use the AI Triage Notes to propose a solution if applicable. DO NOT write subject lines.
-    
-    User Issue:
-    ${ticketDescription}
-    Triage Context :
-    ${aiNotes}`;
+  try {
+    const completion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert customer support engineer. Write a professional, empathetic, and concise reply to the user ticket using the provided AI notes. DO NOT write subject lines."
+        },
+        {
+          role: "user",
+          content: `User Issue: ${ticketDescription}\nTriage Context: ${aiNotes}`
+        }
+      ],
+      model: "mixtral-8x7b-32768",
+    });
 
-  const model = genAi.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
-  const result = await model.generateContent(prompt);
-  return result.response.text();
+    return completion.choices[0].message.content;
+  } catch (error) {
+    console.error("Groq Drafting Error:", error.message);
+    return "I'm sorry, I encountered an error while generating a draft. Please check back later.";
+  }
 }
-
 
 export default analyzeTicket;

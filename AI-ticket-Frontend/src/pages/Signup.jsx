@@ -46,7 +46,7 @@ function Signup() {
 
   return (
     <div className="min-h-screen w-full lg:grid lg:grid-cols-[1fr_1.2fr] bg-[#020203] text-white">
-      
+
       {/* Left Column - Form */}
       <div className="flex flex-col items-center justify-center py-12 px-8 sm:px-12 lg:px-20 relative overflow-hidden">
         {/* Abstract Glow */}
@@ -61,7 +61,7 @@ function Signup() {
               </div>
               <span className="font-bold text-lg tracking-tight">Ticket AI</span>
             </Link>
-            
+
             <div className="space-y-2">
               <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-b from-white to-white/60 bg-clip-text text-transparent">Create account</h1>
               <p className="text-white/40 text-sm font-medium">Join the next generation of support.</p>
@@ -73,27 +73,27 @@ function Signup() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">Email Address</label>
-                <input 
-                  type="email" 
-                  name="email" 
-                  placeholder='name@example.com' 
-                  className='flex h-12 w-full rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2 text-sm text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 transition-all focus:border-primary/30' 
-                  value={form.email} 
-                  onChange={handleChange} 
-                  required 
+                <input
+                  type="email"
+                  name="email"
+                  placeholder='name@example.com'
+                  className='flex h-12 w-full rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2 text-sm text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 transition-all focus:border-primary/30'
+                  value={form.email}
+                  onChange={handleChange}
+                  required
                 />
               </div>
 
               <div className="space-y-2">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">Password</label>
-                <input 
-                  type="password" 
-                  name="password" 
-                  placeholder='••••••••' 
-                  className='flex h-12 w-full rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2 text-sm text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 transition-all focus:border-primary/30' 
-                  value={form.password} 
-                  onChange={handleChange} 
-                  required 
+                <input
+                  type="password"
+                  name="password"
+                  placeholder='••••••••'
+                  className='flex h-12 w-full rounded-xl border border-white/10 bg-white/[0.02] px-4 py-2 text-sm text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/40 transition-all focus:border-primary/30'
+                  value={form.password}
+                  onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -116,28 +116,28 @@ function Signup() {
       <div className="hidden lg:flex relative bg-[#010103] border-l border-white/5 items-center justify-center p-12 overflow-hidden">
         {/* Immersive Background Elements */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-        
-        <div className="relative z-10 w-full max-w-2xl animate-in fade-in zoom-in-95 duration-1000">
-           <div className="mb-12 space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold tracking-widest uppercase text-primary">
-                 <Target className="h-3 w-3" /> Precision Triage
-              </div>
-              <h2 className="text-5xl font-bold tracking-tight bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent leading-tight">
-                 Automate the <br /> triage bottleneck.
-              </h2>
-           </div>
 
-           <div className="relative group/image">
-              <div className="absolute -inset-4 bg-primary/10 blur-3xl rounded-[32px] opacity-0 group-hover/image:opacity-100 transition-opacity duration-1000" />
-              <div className="relative border border-white/10 rounded-2xl overflow-hidden bg-black shadow-2xl scale-100 hover:scale-[1.02] transition-transform duration-700">
-                 <div className="flex items-center gap-1.5 px-4 h-10 border-b border-white/10 bg-white/[0.02]">
-                    <div className="h-2 w-2 rounded-full bg-white/10" />
-                    <div className="h-2 w-2 rounded-full bg-white/10" />
-                    <div className="h-2 w-2 rounded-full bg-white/10" />
-                 </div>
-                 <img src={AiTriageImg} alt="AI Triage Intelligence" className="w-full h-auto opacity-80 group-hover/image:opacity-100 transition-opacity duration-700" />
+        <div className="relative z-10 w-full max-w-2xl animate-in fade-in zoom-in-95 duration-1000">
+          <div className="mb-12 space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold tracking-widest uppercase text-primary">
+              <Target className="h-3 w-3" /> Precision Triage
+            </div>
+            <h2 className="text-5xl font-bold tracking-tight bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent leading-tight">
+              Automate the <br /> triage bottleneck.
+            </h2>
+          </div>
+
+          <div className="relative group/image">
+            <div className="absolute -inset-4 bg-primary/10 blur-3xl rounded-[32px] opacity-0 group-hover/image:opacity-100 transition-opacity duration-1000" />
+            <div className="relative border border-white/10 rounded-2xl overflow-hidden bg-black shadow-2xl scale-100 hover:scale-[1.02] transition-transform duration-700">
+              <div className="flex items-center gap-1.5 px-4 h-10 border-b border-white/10 bg-white/[0.02]">
+                <div className="h-2 w-2 rounded-full bg-white/10" />
+                <div className="h-2 w-2 rounded-full bg-white/10" />
+                <div className="h-2 w-2 rounded-full bg-white/10" />
               </div>
-           </div>
+              <img src={AiTriageImg} alt="AI Triage Intelligence" className="w-full h-auto opacity-80 group-hover/image:opacity-100 transition-opacity duration-700" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
