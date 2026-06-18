@@ -81,6 +81,10 @@ function Tickets() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.title.trim() || !form.description.trim()) {
+      toast.error("Title and description are required.");
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch(`${import.meta.env.VITE_SERVER_URL}/tickets`, {
@@ -164,41 +168,42 @@ function Tickets() {
                   </Card>
                 ))
               ) : (
-                // The Actual Ticket List
-                displayedTickets.map((ticket) => (
-                  <Link key={ticket._id} to={`/tickets/${ticket._id}`}>
-                    <Card className="h-full hover:border-primary/50 transition-all border-border/40 bg-card/20 hover:bg-card/40 cursor-pointer shadow-sm group">
-                      <CardHeader className="pb-3 text-white/80">
-                        <div className="flex justify-between items-start gap-4">
-                          <CardTitle className="text-md font-semibold line-clamp-1 group-hover:text-primary transition-colors">{ticket.title}</CardTitle>
-                          {getStatusBadge(ticket.status)}
-                        </div>
-                        <CardDescription className="line-clamp-2 text-xs text-muted-foreground font-medium">
-                          {ticket.description}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardFooter className="pt-2 text-[10px] uppercase tracking-wider font-bold text-muted-foreground/40 border-t border-border/10 mt-2 flex justify-between items-center">
-                        <div className="flex items-center gap-2 pt-2">
-                          <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
-                          Created {new Date(ticket.createdAt).toLocaleDateString()}
-                        </div>
-                        {ticket.responses?.length > 0 && (
-                          <div className="mt-4 flex items-center gap-3 bg-zinc-900/80 border border-zinc-800 rounded-lg p-1.5 w-2/3 group-hover:border-primary/50 transition-all shadow-inner group-hover:bg-zinc-900">
-                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 border border-primary/25 shadow-inner">
-                              <MessageCircle className="w-4 h-4 text-primary" />
-                            </div>
-                            <div className="flex flex-col">
-                              <span className="text-[11px] font-bold text-white/95 leading-none uppercase tracking-tight">
-                                {ticket.responses.length} NEW MESSAGE{ticket.responses.length > 1 ? 'S' : ''}
-                              </span>
-                            </div>
+                displayedTickets.length === 0 ? <p>No tickets found</p> :
+                  // The Actual Ticket List
+                  displayedTickets.map((ticket) => (
+                    <Link key={ticket._id} to={`/tickets/${ticket._id}`}>
+                      <Card className="h-full hover:border-primary/50 transition-all border-border/40 bg-card/20 hover:bg-card/40 cursor-pointer shadow-sm group">
+                        <CardHeader className="pb-3 text-white/80">
+                          <div className="flex justify-between items-start gap-4">
+                            <CardTitle className="text-md font-semibold line-clamp-1 group-hover:text-primary transition-colors">{ticket.title}</CardTitle>
+                            {getStatusBadge(ticket.status)}
                           </div>
-                        )}
-                      </CardFooter>
+                          <CardDescription className="line-clamp-2 text-xs text-muted-foreground font-medium">
+                            {ticket.description}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardFooter className="pt-2 text-[10px] uppercase tracking-wider font-bold text-muted-foreground/40 border-t border-border/10 mt-2 flex justify-between items-center">
+                          <div className="flex items-center gap-2 pt-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
+                            Created {new Date(ticket.createdAt).toLocaleDateString()}
+                          </div>
+                          {ticket.responses?.length > 0 && (
+                            <div className="mt-4 flex items-center gap-3 bg-zinc-900/80 border border-zinc-800 rounded-lg p-1.5 w-2/3 group-hover:border-primary/50 transition-all shadow-inner group-hover:bg-zinc-900">
+                              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 border border-primary/25 shadow-inner">
+                                <MessageCircle className="w-4 h-4 text-primary" />
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-[11px] font-bold text-white/95 leading-none uppercase tracking-tight">
+                                  {ticket.responses.length} NEW MESSAGE{ticket.responses.length > 1 ? 'S' : ''}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </CardFooter>
 
-                    </Card>
-                  </Link>
-                ))
+                      </Card>
+                    </Link>
+                  ))
               )}
               {!loading && tickets.length === 0 && (
                 <div className="col-span-full py-20 text-center border border-dashed border-border/20 rounded-xl bg-muted/5">

@@ -7,7 +7,17 @@ import { sendMail } from "../../utils/mailer.js";
 
 
 export const onTicketCreation = inngest.createFunction(
-  { id: "on-ticket-created", retries: 2 },
+  {
+    id: "on-ticket-created",
+    retries: 2,
+    onFailure: async ({ event, error }) => {
+      const { ticketId } = event.data.event.data;
+      await Ticket.findByIdAndUpdate(ticketId, {
+        status: "TODO",
+        processingError: "Automated processing failed. Manual review required."
+      });
+    }
+  },
   { event: "ticket/create" },
 
   async ({ event, step }) => {
@@ -84,6 +94,7 @@ export const onTicketCreation = inngest.createFunction(
       if (!user) {
         user = await User.findOne({
           role: "admin",
+          skills: { $in: relatedskills }
         });
       }
       await Ticket.findByIdAndUpdate(ticket._id, {
@@ -96,11 +107,15 @@ export const onTicketCreation = inngest.createFunction(
       if (moderator) {
         const finalTicket = await Ticket.findById(ticket._id);
         console.log(finalTicket);
-        await sendMail(
-          moderator.email,
-          "Ticket Assigned",
-          `A new ticket is assigned to you ${finalTicket.title}`
-        );
+        if (moderator?.email) {
+          await sendMail(
+            moderator.email,
+            "Ticket Assigned",
+            `A new ticket is assigned to you ${finalTicket.title}`
+          );
+        } else {
+          console.warn("Assigned moderator has no email, skipping notification")
+        }
       }
     });
     return { success: true };

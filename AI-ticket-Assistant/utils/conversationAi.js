@@ -39,26 +39,22 @@ const analyzeTicket = async (ticket) => {
 }
 
 export const generateDraftReply = async (ticketDescription, aiNotes) => {
-  try {
-    const completion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: "You are an expert customer support engineer. Write a professional, empathetic, and concise reply to the user ticket using the provided AI notes. DO NOT write subject lines."
-        },
-        {
-          role: "user",
-          content: `User Issue: ${ticketDescription}\nTriage Context: ${aiNotes}`
-        }
-      ],
-      model: "mixtral-8x7b-32768",
-    });
 
-    return completion.choices[0].message.content;
-  } catch (error) {
-    console.error("Groq Drafting Error:", error.message);
-    return "I'm sorry, I encountered an error while generating a draft. Please check back later.";
-  }
+  const completion = await groq.chat.completions.create({
+    messages: [
+      {
+        role: "system",
+        content: "You are an expert customer support engineer. Write a professional, empathetic, and concise reply to the user ticket using the provided AI notes. DO NOT write subject lines."
+      },
+      {
+        role: "user",
+        content: `User Issue: ${ticketDescription}\nTriage Context: ${aiNotes}`
+      }
+    ],
+    model: "mixtral-8x7b-32768",
+  });
+
+  return completion.choices[0].message.content;
 }
 
 export default analyzeTicket;

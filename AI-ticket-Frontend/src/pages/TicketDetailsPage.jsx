@@ -18,6 +18,7 @@ function TicketDetailsPage() {
   const [replyText, setReplyText] = useState("");
   const [generating, setGenerating] = useState(false);
   const token = localStorage.getItem("token");
+  const [isSending, setIsSending] = useState(false);
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')) || {});
 
 
@@ -62,7 +63,7 @@ function TicketDetailsPage() {
         setReplyText(data.draft);
         toast.success("AI Draft Generated!");
       } else {
-        toast.error("Failed to generate draft.");
+        toast.error(data?.error || "Failed to generate draft.");
       }
     } catch (error) {
       toast.error("Network error");
@@ -71,6 +72,7 @@ function TicketDetailsPage() {
   }
 
   const handleSendReply = async () => {
+    if (isSending) return;
     if (!replyText.trim()) return toast.error("Write a message first!");
     try {
       const result = await fetch(`${import.meta.env.VITE_SERVER_URL}/tickets/${id}/responses`, {
@@ -82,13 +84,18 @@ function TicketDetailsPage() {
         body: JSON.stringify({ message: replyText })
       });
 
-      const data = await result.json();
+      const data = await result.json().catch(() => ({}));
       if (result.ok) {
         setTicket(data.ticket);
         setReplyText("");
         toast.success("Reply sent");
       } else {
-        toast.error("Failed to send reply!")
+        if (result.status === 401) {
+          toast.error("Session expired. Please log in again.");
+          // optionally: logout() or redirect to /login
+          return;
+        }
+        toast.error(data?.error || "Failed to send reply!")
       }
 
     } catch (error) {
@@ -321,7 +328,7 @@ function TicketDetailsPage() {
                         </Button>
                       )}
                     </div>
-                    <Button onClick={handleSendReply} className="text-xs font-bold tracking-wide shadow-lg">
+                    <Button onClick={handleSendReply} disabled={isSending} className="text-xs font-bold tracking-wide shadow-lg">
                       Send Reply
                     </Button>
                   </div>

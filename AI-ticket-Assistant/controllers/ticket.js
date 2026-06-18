@@ -1,13 +1,18 @@
 import { inngest } from "../inngest/client.js";
 import Ticket from "../models/ticket.model.js";
 import { generateDraftReply } from "../utils/conversationAi.js";
+import mongoose from "mongoose";
 
 export const createTicket = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const title = req.body.title?.trim();
+    const description = req.body.description?.trim();
     if (!title || !description) {
       return res.status(400).json({ message: "Title and description are required!" });
     }
+    if (title.length < 3) return res.status(409).json({
+      message: "Title too short"
+    });
     const newTicket = await Ticket.create({
       title,
       description,
@@ -19,7 +24,7 @@ export const createTicket = async (req, res) => {
       await inngest.send({
         name: "ticket/create",
         data: {
-          ticketId: (newTicket)._id.toString(),
+          ticketId: newTicket._id.toString(),
           title,
           description,
           createdBy: req.user._id.toString()
@@ -36,8 +41,8 @@ export const createTicket = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error Creating Ticket");
-    return res.status(500).json({ message: "Internal Error" + error.message });
+    console.error("Error Creating Ticket:", error.message);
+    return res.status(500).json({ message: "Internal server error" });
   }
 }
 
@@ -50,7 +55,8 @@ export const getTickets = async (req, res) => {
     if (user.role !== "user") {
       tickets = await Ticket.find({})
         .populate("assignedTo", ["email", "_id"])
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .limit(50);
     } else {
       tickets = await Ticket.find({ createdBy: user._id })
         .select("title description status createdAt responses")
@@ -59,7 +65,7 @@ export const getTickets = async (req, res) => {
     // console.log(tickets);
     return res.status(200).json(tickets);
   } catch (error) {
-    console.error("Error Fetching Tickets");
+    console.error("Error Fetching Tickets", error.message);
     return res.status(500).json({ message: "Internal Error " + error.message })
   }
 }
@@ -81,14 +87,13 @@ export const getSingleTicket = async (req, res) => {
     }
 
     if (!ticket) {
-      res.status(404).json({ message: "Ticket Not Found!" });
+      return res.status(404).json({ message: "Ticket Not Found!" });
     }
 
     return res.status(200).json({ message: "Ticket Fetched!", ticket });
 
-
   } catch (error) {
-    console.error("Error Fetching Ticket");
+    console.error("Error Fetching Ticket", error.message);
     return res.status(500).json({ message: "Internal Error" + error.message })
   }
 }
@@ -97,7 +102,16 @@ export const getSingleTicket = async (req, res) => {
 export const addResponse = async (req, res) => {
   const { id } = req.params;
   const { message } = req.body;
+  if (!req.user?._id || !req.user?.role) {
+    return res.status(401).json({ error: "Invalid user session." });
+  }
+  if (!message || !message.trim()) {
+    return res.status(400).json({ error: "Message cannot be empty!" });
+  }
   try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid ticket ID." });
+    }
     const ticket = await Ticket.findById(id);
     if (!ticket) {
       return res.status(404).json({
@@ -111,6 +125,7 @@ export const addResponse = async (req, res) => {
     })
 
     if (req.user.role === "user") ticket.status = "TODO";
+    else ticket.status = "IN_PROGRESS";
     await ticket.save();
 
     return res.status(200).json({
@@ -127,7 +142,14 @@ export const addResponse = async (req, res) => {
 export const draftAiReply = async (req, res) => {
   const { id } = req.params;
   try {
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(401).json({ error: "Invalid ticket Id " })
+    }
     const ticket = await Ticket.findById(id);
+    if (!ticket) return res.status(404).json({ error: "Ticket not found!" });
+
+    const aiNotes = ticket.helpfulNotes || "No additional context provided";
+
     const draft = await generateDraftReply(ticket.description, ticket.helpfulNotes);
     return res.status(200).json({
       draft
