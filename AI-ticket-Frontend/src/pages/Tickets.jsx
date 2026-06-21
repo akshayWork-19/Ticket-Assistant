@@ -47,8 +47,11 @@ function Tickets() {
       }
 
       const data = await res.json();
-      if (res.ok && Array.isArray(data)) {
-        setTickets(data);
+      if (res.ok && data.tickets && Array.isArray(data.tickets)) {
+        setTickets(data.tickets);
+      } else if (res.ok && Array.isArray(data)) {
+         // Fallback just in case some other route returns an array
+         setTickets(data);
       } else {
         setTickets([]);
       }
