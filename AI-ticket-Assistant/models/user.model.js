@@ -4,16 +4,18 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    index: true        // fast lookups on login & role updates
   },
   password: {
     type: String,
-    requried: true,
+    required: true,
   },
   role: {
     type: String,
     default: "user",
-    enum: ["user", "moderator", "admin"]
+    enum: ["user", "moderator", "admin"],
+    index: true        // fast moderator queries in Inngest triage
   },
   skills: [String],
   avatarUrl: {

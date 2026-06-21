@@ -29,16 +29,29 @@ export const createTicket = async (userId, { title, description }) => {
     return newTicket;
 };
 
-export const getTicketsForUser = async (user) => {
+export const getTicketsForUser = async (user, { page = 1, limit = 10 } = {}) => {
+    const skip = (page - 1) * limit;
+
     if (user.role !== "user") {
-        return await Ticket.find({ isDeleted: { $ne: true } })
-            .populate("assignedTo", ["email", "_id"])
-            .sort({ createdAt: -1 })
-            .limit(50);
+        const [tickets, total] = await Promise.all([
+            Ticket.find({ isDeleted: { $ne: true } })
+                .populate("assignedTo", ["email", "_id"])
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            Ticket.countDocuments({ isDeleted: { $ne: true } })
+        ]);
+        return { tickets, total, page, limit, totalPages: Math.ceil(total / limit) };
     } else {
-        return await Ticket.find({ createdBy: user._id, isDeleted: { $ne: true } })
-            .select("title description status createdAt responses")
-            .sort({ createdAt: -1 });
+        const [tickets, total] = await Promise.all([
+            Ticket.find({ createdBy: user._id, isDeleted: { $ne: true } })
+                .select("title description status createdAt responses")
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            Ticket.countDocuments({ createdBy: user._id, isDeleted: { $ne: true } })
+        ]);
+        return { tickets, total, page, limit, totalPages: Math.ceil(total / limit) };
     }
 };
 

@@ -26,8 +26,11 @@ export const createTicket = async (req, res) => {
 
 export const getTickets = async (req, res) => {
   try {
-    const tickets = await ticketService.getTicketsForUser(req.user);
-    return res.status(200).json(tickets);
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 10));
+
+    const result = await ticketService.getTicketsForUser(req.user, { page, limit });
+    return res.status(200).json(result);
   } catch (error) {
     logger.error(`Error Fetching Tickets: ${error.message}`, { stack: error.stack });
     return res.status(500).json({ message: "Internal Error " + error.message });
