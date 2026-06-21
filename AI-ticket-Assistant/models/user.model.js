@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
   avatarUrl: {
     type: String,
     default: ""
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false
   }
 });
 

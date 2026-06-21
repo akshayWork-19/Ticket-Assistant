@@ -1,7 +1,9 @@
 import Groq from "groq-sdk";
+import config from "../config/config.js";
+import logger from "./logger.js";
 
-// console.log(process.env.GROQ_API_KEY);
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+
+const groq = new Groq({ apiKey: config.groqApiKey });
 
 const analyzeTicket = async (ticket) => {
   try {
@@ -11,7 +13,7 @@ const analyzeTicket = async (ticket) => {
           role: "system",
           content: `You are an expert AI assistant that processes technical support tickets. 
           Analyze the ticket and provide a summary, priority (low, medium, high), helpful notes for moderators, and relevant technical skills.
-          IMPORTANT: You MUST respond with ONLY a valid JSON object.`
+          IMPORTANT: You MUST respond with ONLY a valid JSON object using exactly these keys: "summary" (string), "priority" (string), "helpfulNotes" (string), and "relatedSkills" (array of strings).`
         },
         {
           role: "user",
@@ -33,7 +35,7 @@ const analyzeTicket = async (ticket) => {
     return JSON.parse(jsonMatch[0]);
 
   } catch (error) {
-    console.error("Groq Analysis Error:", error.message);
+    logger.error(`Groq Analysis Error: ${error.message}`);
     throw error;
   }
 }

@@ -4,7 +4,7 @@ import { NonRetriableError } from "inngest";
 import analyzeTicket from "../../utils/conversationAi.js"
 import User from "../../models/user.model.js";
 import { sendMail } from "../../utils/mailer.js";
-
+import logger from "../../utils/logger.js";
 
 export const onTicketCreation = inngest.createFunction(
   {
@@ -22,49 +22,50 @@ export const onTicketCreation = inngest.createFunction(
 
   async ({ event, step }) => {
     const { ticketId } = event.data;
-    console.log("🎫 Inngest: onTicketCreation triggered for:", ticketId);
+    logger.info(`🎫 Inngest: onTicketCreation triggered for: ${ticketId}`);
 
     //fetch ticket from DB
     const ticket = await step.run("fetch-ticket", async () => {
-      console.log("🔍 Fetching ticket details...");
+      logger.info("🔍 Fetching ticket details...");
       const ticketObject = await Ticket.findById(ticketId);
       if (!ticketObject) {
-        console.error("❌ Ticket not found in DB:", ticketId);
+        logger.error(`❌ Ticket not found in DB: ${ticketId}`);
         throw new NonRetriableError("Ticket Not Found!");
       }
       return ticketObject.toObject();
     })
 
     await step.run("update-ticket-status", async () => {
-      // console.log("Running");
       await Ticket.findByIdAndUpdate(ticket._id, { status: "TODO" });
     })
-
-    // const aiResponse = await analyzeTicket(ticket);
 
     const aiResponse = await step.run("call-ai-triage", async () => {
       try {
         return await analyzeTicket(ticket);
       } catch (error) {
-        console.error("AI Triage Failed:", error.message);
+        logger.error(`AI Triage Failed: ${error.message}`);
         return null;
       }
     });
 
     const relatedskills = await step.run("ai-processing", async () => {
       let skills = [];
+      logger.info(`Inside ai-processing. aiResponse is: ${JSON.stringify(aiResponse)}`);
       if (aiResponse && typeof aiResponse === 'object') {
+        const notes = aiResponse.helpful_notes || aiResponse.helpfulNotes;
+        const helpfulNotesString = Array.isArray(notes) ? notes.join("\n") : (typeof notes === 'string' ? notes : "AI was unable to generate notes for this ticket.");
+
         await Ticket.findByIdAndUpdate(ticket._id, {
           priority: !["low", "medium", "high"].includes(aiResponse.priority?.toLowerCase())
             ? "medium"
             : aiResponse.priority.toLowerCase(),
-          helpfulNotes: aiResponse.helpfulNotes || "AI was unable to generate notes for this ticket.",
+          helpfulNotes: helpfulNotesString,
           status: "IN_PROGRESS",
-          relatedSkills: Array.isArray(aiResponse.relatedSkills) ? aiResponse.relatedSkills : [],
+          relatedSkills: Array.isArray(aiResponse.technical_skills) ? aiResponse.technical_skills : (Array.isArray(aiResponse.relatedSkills) ? aiResponse.relatedSkills : []),
         }, {
           new: true
         });
-        skills = Array.isArray(aiResponse.relatedSkills) ? aiResponse.relatedSkills : [];
+        skills = Array.isArray(aiResponse.technical_skills) ? aiResponse.technical_skills : (Array.isArray(aiResponse.relatedSkills) ? aiResponse.relatedSkills : []);
       } else {
         // Fallback if AI fails completely
         await Ticket.findByIdAndUpdate(ticket._id, {
@@ -106,7 +107,7 @@ export const onTicketCreation = inngest.createFunction(
     await step.run("send-email-notification", async () => {
       if (moderator) {
         const finalTicket = await Ticket.findById(ticket._id);
-        console.log(finalTicket);
+        logger.debug(`Final Ticket State: ${JSON.stringify(finalTicket)}`);
         if (moderator?.email) {
           await sendMail(
             moderator.email,
@@ -114,11 +115,11 @@ export const onTicketCreation = inngest.createFunction(
             `A new ticket is assigned to you ${finalTicket.title}`
           );
         } else {
-          console.warn("Assigned moderator has no email, skipping notification")
+          logger.warn("Assigned moderator has no email, skipping notification");
         }
       }
     });
-    return { success: true };
 
+    return { success: true };
   }
-)
+);

@@ -31,7 +31,11 @@ const ticketSchema = new mongoose.Schema({
       type: Date,
       default: Date.now
     }
-  }]
+  }],
+  isDeleted: {
+    type: Boolean,
+    default: false
+  }
 }, { timestamps: true });
 
 export default mongoose.model('Ticket', ticketSchema);

@@ -2,6 +2,7 @@ import { inngest } from "../client.js";
 import User from "../../models/user.model.js"
 import { NonRetriableError } from "inngest";
 import { sendMail } from "../../utils/mailer.js";
+import logger from "../../utils/logger.js";
 
 
 export const onUserSignup = inngest.createFunction(
@@ -17,7 +18,7 @@ export const onUserSignup = inngest.createFunction(
         }
         return user;
       })
-      console.log("userSearch:", userSearch);
+      logger.info(`userSearch: ${JSON.stringify(userSearch)}`);
 
       await step.run("send-welcome-email", async () => {
         const subject = `Welcome to the App`
@@ -31,7 +32,7 @@ export const onUserSignup = inngest.createFunction(
       return { success: true }
 
     } catch (error) {
-      console.error(`❌ Error Running Step`, error.message);
+      logger.error(`❌ Error Running Step: ${error.message}`);
       return { success: false }
     }
   }

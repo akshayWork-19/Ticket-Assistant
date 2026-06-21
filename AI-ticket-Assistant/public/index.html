@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Ticket Assistant — API Docs</title>
+    <meta name="description"
+        content="AI-powered ticket triage API built with Node.js, Inngest, and Groq LLM. Full authentication, real-time AI processing, and role-based access control." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #080c14;
+            --surface: #0f1623;
+            --surface2: #151d2e;
+            --border: rgba(99, 120, 168, 0.15);
+            --border-hover: rgba(99, 120, 168, 0.35);
+            --text: #e2e8f0;
+            --muted: #64748b;
+            --indigo: #6366f1;
+            --indigo-glow: rgba(99, 102, 241, 0.15);
+            --cyan: #22d3ee;
+            --green: #34d399;
+            --orange: #fb923c;
+            --red: #f87171;
+            --purple: #a78bfa;
+            --yellow: #fbbf24;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+
+        /* ── NAV ── */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+            background: rgba(8, 12, 20, 0.85);
+            backdrop-filter: blur(16px);
+            padding: 0 2rem;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .nav-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--indigo), var(--cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 14px;
+            color: white;
+            letter-spacing: -0.5px;
+            flex-shrink: 0;
+        }
+
+        .nav-title {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .nav-sub {
+            font-size: 0.7rem;
+            color: var(--muted);
+            margin-top: 1px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-green {
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            color: var(--green);
+        }
+
+        .badge-green::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        .btn-postman {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #FF6C37;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.15s;
+        }
+
+        .btn-postman:hover {
+            background: #ff8255;
+            transform: translateY(-1px);
+        }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 80px 2rem 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            background: linear-gradient(135deg, #e2e8f0 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            max-width: 600px;
+            margin: 0 auto 32px;
+            color: var(--muted);
+            font-size: 1.05rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--indigo);
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+            box-shadow: 0 0 30px var(--indigo-glow);
+        }
+
+        .btn-primary:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 0 40px rgba(99, 102, 241, 0.3);
+        }
+
+        /* ── STATS ── */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1px;
+            background: var(--border);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat {
+            padding: 28px 24px;
+            background: var(--bg);
+            text-align: center;
+        }
+
+        .stat-val {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--indigo), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 0.78rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        /* ── LAYOUT ── */
+        .main {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            max-width: 1280px;
+            margin: 0 auto;
+            min-height: calc(100vh - 64px);
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            position: sticky;
+            top: 64px;
+            height: calc(100vh - 64px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+            padding: 24px 0;
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-heading {
+            padding: 0 20px 8px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 20px;
+            text-decoration: none;
+            font-size: 0.83rem;
+            color: var(--muted);
+            border-left: 2px solid transparent;
+            transition: all 0.15s;
+        }
+
+        .sidebar-link:hover {
+            color: var(--text);
+            background: var(--surface);
+        }
+
+        .sidebar-link.active {
+            color: var(--indigo);
+            border-left-color: var(--indigo);
+            background: var(--indigo-glow);
+        }
+
+        /* ── CONTENT ── */
+        .content {
+            padding: 40px 48px;
+        }
+
+        /* ── SECTION ── */
+        .section {
+            margin-bottom: 64px;
+            scroll-margin-top: 80px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .section-desc {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-bottom: 28px;
+        }
+
+        /* ── ENDPOINT CARD ── */
+        .endpoint-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .endpoint-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 20px 24px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .method-GET {
+            background: rgba(34, 211, 238, 0.1);
+            color: var(--cyan);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+        }
+
+        .method-POST {
+            background: rgba(52, 211, 153, 0.1);
+            color: var(--green);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+        }
+
+        .method-PUT {
+            background: rgba(251, 146, 60, 0.1);
+            color: var(--orange);
+            border: 1px solid rgba(251, 146, 60, 0.2);
+        }
+
+        .method-DELETE {
+            background: rgba(248, 113, 113, 0.1);
+            color: var(--red);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+        }
+
+        .endpoint-info {
+            flex: 1;
+        }
+
+        .endpoint-path {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .endpoint-name {
+            font-size: 0.82rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .endpoint-meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .auth-badge {
+            padding: 2px 8px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            border-radius: 4px;
+            border: 1px solid;
+        }
+
+        .auth-required {
+            background: rgba(167, 139, 250, 0.1);
+            color: var(--purple);
+            border-color: rgba(167, 139, 250, 0.2);
+        }
+
+        .auth-public {
+            background: rgba(100, 116, 139, 0.1);
+            color: var(--muted);
+            border-color: rgba(100, 116, 139, 0.2);
+        }
+
+        .auth-admin {
+            background: rgba(251, 191, 36, 0.1);
+            color: var(--yellow);
+            border-color: rgba(251, 191, 36, 0.2);
+        }
+
+        .chevron {
+            color: var(--muted);
+            transition: transform 0.2s;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .endpoint-body {
+            display: none;
+            border-top: 1px solid var(--border);
+            padding: 24px;
+            gap: 24px;
+        }
+
+        .endpoint-body.open {
+            display: grid;
+        }
+
+        .endpoint-body.two-col {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .endpoint-body.one-col {
+            grid-template-columns: 1fr;
+        }
+
+        .body-section-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        pre {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            color: var(--green);
+        }
+
+        .pre-req {
+            color: #93c5fd;
+        }
+
+        .note {
+            display: flex;
+            gap: 10px;
+            padding: 12px 16px;
+            background: var(--indigo-glow);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 8px;
+            font-size: 0.82rem;
+            color: #a5b4fc;
+            margin-top: 12px;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .content {
+                padding: 24px 20px;
+            }
+
+            .endpoint-body.two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <a href="/" class="nav-brand">
+            <div class="nav-logo">AI</div>
+            <div>
+                <div class="nav-title">Ticket Assistant API</div>
+                <div class="nav-sub">REST · Inngest · Groq LLM</div>
+            </div>
+        </a>
+        <div class="nav-right">
+            <span class="badge badge-green">Live</span>
+            <!-- <a href="https://security-participant-78693924-s-team.postman.co/workspace/My-Workspace~b9fb67d8-621d-4f36-8edb-50d317950120/collection/41462333-b19ddaf0-a585-4ea6-832c-296baba4a01c?action=share&source=copy-link&creator=41462333"
+                target="_blank" class="btn-postman">
+                <svg width="16" height="16" viewBox="0 0 128 128" fill="currentColor">
+                    <path
+                        d="M119.8 45.4h-19.4c-3.1 0-5.7 2.6-5.7 5.7v28.8c0 3.1 2.6 5.7 5.7 5.7h19.4c3.1 0 5.7-2.6 5.7-5.7V51.1c0-3.1-2.6-5.7-5.7-5.7zm-20.9 31h-16.7c-3.1 0-5.7-2.6-5.7-5.7V42.1c0-3.1 2.6-5.7 5.7-5.7h16.7c3.1 0 5.7 2.6 5.7 5.7v28.6c.1 3.1-2.5 5.7-5.7 5.7zM78.6 36.4H62c-3.1 0-5.7 2.6-5.7 5.7v37.6c0 3.1 2.6 5.7 5.7 5.7h16.7c3.1 0 5.7-2.6 5.7-5.7V42.1c-.1-3.2-2.6-5.7-5.8-5.7zM36.8 55.4H20.1c-3.1 0-5.7 2.6-5.7 5.7v24.4c0 3.1 2.6 5.7 5.7 5.7h16.7c3.1 0 5.7-2.6 5.7-5.7V61.1c.1-3.1-2.4-5.7-5.7-5.7zM57.6 27.5H41c-3.1 0-5.7 2.6-5.7 5.7v55.6c0 3.1 2.6 5.7 5.7 5.7h16.7c3.1 0 5.7-2.6 5.7-5.7V33.2c0-3.1-2.6-5.7-5.8-5.7z" />
+                </svg>
+                Run in Postman
+            </a> -->
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <div class="hero">
+        <h1>AI Ticket Assistant API</h1>
+        <p>Production-ready REST API with AI-powered ticket triage, role-based access control, and asynchronous Inngest
+            workflows. All endpoints tested via Postman.</p>
+        <div class="hero-actions">
+            <a href="#auth" class="btn-primary">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Browse Endpoints
+            </a>
+            <!-- <a href="https://security-participant-78693924-s-team.postman.co/workspace/My-Workspace~b9fb67d8-621d-4f36-8edb-50d317950120/collection/41462333-b19ddaf0-a585-4ea6-832c-296baba4a01c?action=share&creator=41462333"
+                target="_blank" class="btn-postman">
+                <svg width="16" height="16" viewBox="0 0 128 128" fill="currentColor">
+                    <path
+                        d="M119.8 45.4h-19.4c-3.1 0-5.7 2.6-5.7 5.7v28.8c0 3.1 2.6 5.7 5.7 5.7h19.4c3.1 0 5.7-2.6 5.7-5.7V51.1c0-3.1-2.6-5.7-5.7-5.7zm-20.9 31h-16.7c-3.1 0-5.7-2.6-5.7-5.7V42.1c0-3.1 2.6-5.7 5.7-5.7h16.7c3.1 0 5.7 2.6 5.7 5.7v28.6c.1 3.1-2.5 5.7-5.7 5.7zM78.6 36.4H62c-3.1 0-5.7 2.6-5.7 5.7v37.6c0 3.1 2.6 5.7 5.7 5.7h16.7c3.1 0 5.7-2.6 5.7-5.7V42.1c-.1-3.2-2.6-5.7-5.8-5.7zM36.8 55.4H20.1c-3.1 0-5.7 2.6-5.7 5.7v24.4c0 3.1 2.6 5.7 5.7 5.7h16.7c3.1 0 5.7-2.6 5.7-5.7V61.1c.1-3.1-2.4-5.7-5.7-5.7zM57.6 27.5H41c-3.1 0-5.7 2.6-5.7 5.7v55.6c0 3.1 2.6 5.7 5.7 5.7h16.7c3.1 0 5.7-2.6 5.7-5.7V33.2c0-3.1-2.6-5.7-5.8-5.7z" />
+                </svg>
+                Open Postman Collection
+            </a> -->
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-val">9</div>
+            <div class="stat-label">API Endpoints</div>
+        </div>
+        <div class="stat">
+            <div class="stat-val">JWT</div>
+            <div class="stat-label">Authentication</div>
+        </div>
+        <div class="stat">
+            <div class="stat-val">AI</div>
+            <div class="stat-label">LLM Triage via Groq</div>
+        </div>
+        <div class="stat">
+            <div class="stat-val">Async</div>
+            <div class="stat-label">Powered by Inngest</div>
+        </div>
+        <div class="stat">
+            <div class="stat-val">3</div>
+            <div class="stat-label">User Roles</div>
+        </div>
+    </div>
+
+    <div class="main">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-heading">Auth</div>
+                <a href="#signup" class="sidebar-link">
+                    <span class="method method-POST" style="padding:1px 6px;font-size:0.6rem;">POST</span> Sign Up
+                </a>
+                <a href="#login" class="sidebar-link">
+                    <span class="method method-POST" style="padding:1px 6px;font-size:0.6rem;">POST</span> Login
+                </a>
+                <a href="#details" class="sidebar-link">
+                    <span class="method method-GET" style="padding:1px 6px;font-size:0.6rem;">GET</span> Get Details
+                </a>
+                <a href="#update-role" class="sidebar-link">
+                    <span class="method method-PUT" style="padding:1px 6px;font-size:0.6rem;">PUT</span> Update Role
+                </a>
+                <a href="#update-profile" class="sidebar-link">
+                    <span class="method method-PUT" style="padding:1px 6px;font-size:0.6rem;">PUT</span> Update Profile
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-heading">Tickets</div>
+                <a href="#create-ticket" class="sidebar-link">
+                    <span class="method method-POST" style="padding:1px 6px;font-size:0.6rem;">POST</span> Create Ticket
+                </a>
+                <a href="#get-tickets" class="sidebar-link">
+                    <span class="method method-GET" style="padding:1px 6px;font-size:0.6rem;">GET</span> Get All Tickets
+                </a>
+                <a href="#get-ticket" class="sidebar-link">
+                    <span class="method method-GET" style="padding:1px 6px;font-size:0.6rem;">GET</span> Get Single
+                    Ticket
+                </a>
+                <a href="#add-response" class="sidebar-link">
+                    <span class="method method-POST" style="padding:1px 6px;font-size:0.6rem;">POST</span> Add Response
+                </a>
+                <a href="#ai-draft" class="sidebar-link">
+                    <span class="method method-POST" style="padding:1px 6px;font-size:0.6rem;">POST</span> AI Draft
+                    Reply
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-heading">System</div>
+                <a href="#health" class="sidebar-link">
+                    <span class="method method-GET" style="padding:1px 6px;font-size:0.6rem;">GET</span> Health Check
+                </a>
+            </div>
+        </aside>
+
+        <!-- CONTENT -->
+        <div class="content">
+
+            <!-- AUTH SECTION -->
+            <div id="auth" class="section">
+                <div class="section-title">Authentication</div>
+                <div class="section-desc">All protected routes require a JWT Bearer token in the Authorization header.
+                    Tokens are issued on signup and login.</div>
+
+                <!-- SIGNUP -->
+                <div id="signup" class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggle(this)">
+                        <span class="method method-POST">POST</span>
+                        <div class="endpoint-info">
+                            <div class="endpoint-path">/api/auth/signup</div>
+                            <div class="endpoint-name">Register a new user account</div>
+                        </div>
+                        <div class="endpoint-meta">
+                            <span class="auth-badge auth-public">Public</span>
+                            <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="endpoint-body two-col">
+                        <div>
+                            <div class="body-section-title">Request Body</div>
+                            <pre class="pre-req">{
+  "email": "user@example.com",
+  "password": "Secure@123"
+}</pre>
+                            <div class="note">Password must be min 8 chars, include uppercase, a number, and a special
+                                character.</div>
+                        </div>
+                        <div>
+                            <div class="body-section-title">Response 201</div>
+                            <pre>{
+  "user": {
+    "_id": "6a37c7c2...",
+    "email": "user@example.com",
+    "role": "user",
+    "skills": [],
+    "avatarUrl": ""
+  },
+  "token": "eyJhbGci..."
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LOGIN -->
+                <div id="login" class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggle(this)">
+                        <span class="method method-POST">POST</span>
+                        <div class="endpoint-info">
+                            <div class="endpoint-path">/api/auth/login</div>
+                            <div class="endpoint-name">Authenticate and get a JWT token</div>
+                        </div>
+                        <div class="endpoint-meta">
+                            <span class="auth-badge auth-public">Public</span>
+                            <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="endpoint-body two-col">
+                        <div>
+                            <div class="body-section-title">Request Body</div>
+                            <pre class="pre-req">{
+  "email": "user@example.com",
+  "password": "Secure@123"
+}</pre>
+                        </div>
+                        <div>
+                            <div class="body-section-title">Response 200</div>
+                            <pre>{
+  "message": "Login Successful!",
+  "user": {
+    "_id": "6a37c7c2...",
+    "email": "user@example.com",
+    "role": "user"
+  },
+  "token": "eyJhbGci..."
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GET DETAILS -->
+                <div id="details" class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggle(this)">
+                        <span class="method method-GET">GET</span>
+                        <div class="endpoint-info">
+                            <div class="endpoint-path">/api/auth/details</div>
+                            <div class="endpoint-name">Get the currently authenticated user's profile</div>
+                        </div>
+                        <div class="endpoint-meta">
+                            <span class="auth-badge auth-required">🔒 Auth</span>
+                            <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="endpoint-body one-col">
+                        <div>
+                            <div class="body-section-title">Response 200</div>
+                            <pre>{
+  "user": {
+    "_id": "6a37c7c2...",
+    "email": "user@example.com",
+    "role": "user",
+    "skills": ["JavaScript", "Node.js"],
+    "avatarUrl": "https://..."
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UPDATE ROLE -->
+                <div id="update-role" class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggle(this)">
+                        <span class="method method-PUT">PUT</span>
+                        <div class="endpoint-info">
+                            <div class="endpoint-path">/api/auth/update</div>
+                            <div class="endpoint-name">Update a user's role and skills (Admin only)</div>
+                        </div>
+                        <div class="endpoint-meta">
+                            <span class="auth-badge auth-admin">⭐ Admin</span>
+                            <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="endpoint-body two-col">
+                        <div>
+                            <div class="body-section-title">Request Body</div>
+                            <pre class="pre-req">{
+  "email": "target@example.com",
+  "role": "moderator",
+  "skills": ["React", "Node.js"]
+}</pre>
+                        </div>
+                        <div>
+                            <div class="body-section-title">Response 200</div>
+                            <pre>{
+  "message": "User updated Successfully!"
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- UPDATE PROFILE -->
+                <div id="update-profile" class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggle(this)">
+                        <span class="method method-PUT">PUT</span>
+                        <div class="endpoint-info">
+                            <div class="endpoint-path">/api/auth/profile</div>
+                            <div class="endpoint-name">Update the current user's avatar or skills</div>
+                        </div>
+                        <div class="endpoint-meta">
+                            <span class="auth-badge auth-required">🔒 Auth</span>
+                            <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="endpoint-body two-col">
+                        <div>
+                            <div class="body-section-title">Request Body</div>
+                            <pre class="pre-req">{
+  "skills": ["React", "TypeScript"],
+  "avatarUrl": "https://avatars.example.com/u/1"
+}</pre>
+                            <div class="note">At least one of skills or avatarUrl is required.</div>
+                        </div>
+                        <div>
+                            <div class="body-section-title">Response 200</div>
+                            <pre>{
+  "message": "Profile updated!",
+  "user": {
+    "_id": "6a37c7c2...",
+    "email": "user@example.com",
+    "skills": ["React", "TypeScript"],
+    "avatarUrl": "https://avatars..."
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TICKETS SECTION -->
+            <div id="tickets" class="section">
+                <div class="section-title">Tickets</div>
+                <div class="section-desc">After a ticket is created, an Inngest background job automatically runs AI
+                    triage — assigning priority, helpful notes, and matching a moderator based on required skills.</div>
+
+                <!-- CREATE -->
+                <div id="create-ticket" class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggle(this)">
+                        <span class="method method-POST">POST</span>
+                        <div class="endpoint-info">
+                            <div class="endpoint-path">/api/tickets</div>
+                            <div class="endpoint-name">Create a new support ticket and trigger AI triage</div>
+                        </div>
+                        <div class="endpoint-meta">
+                            <span class="auth-badge auth-required">🔒 Auth</span>
+                            <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="endpoint-body two-col">
+                        <div>
+                            <div class="body-section-title">Request Body</div>
+                            <pre class="pre-req">{
+  "title": "React app shows white screen",
+  "description": "My React app crashes on load with no error. It was working yesterday."
+}</pre>
+                        </div>
+                        <div>
+                            <div class="body-section-title">Response 201</div>
+                            <pre>{
+  "message": "Ticket created and processing started!",
+  "ticket": {
+    "_id": "6a37cfa4...",
+    "title": "React app shows white screen",
+    "status": "TODO",
+    "priority": null,
+    "createdBy": "6a37c7c2...",
+    "createdAt": "2026-06-21T11:48:00.000Z"
+  }
+}</pre>
+                            <div class="note">Priority and skills are populated asynchronously by the AI Inngest
+                                workflow after creation.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GET ALL -->
+                <div id="get-tickets" class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggle(this)">
+                        <span class="method method-GET">GET</span>
+                        <div class="endpoint-info">
+                            <div class="endpoint-path">/api/tickets</div>
+                            <div class="endpoint-name">List tickets (all for admin/moderator, own for user)</div>
+                        </div>
+                        <div class="endpoint-meta">
+                            <span class="auth-badge auth-required">🔒 Auth</span>
+                            <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="endpoint-body one-col">
+                        <div>
+                            <div class="body-section-title">Response 200 — Admin/Moderator view</div>
+                            <pre>[
+  {
+    "_id": "6a37cfa4...",
+    "title": "React app shows white screen",
+    "status": "IN_PROGRESS",
+    "priority": "high",
+    "assignedTo": { "email": "mod@example.com", "_id": "6a37ab..." },
+    "relatedSkills": ["React", "JavaScript"],
+    "helpfulNotes": "Check for incorrect hook usage...",
+    "createdAt": "2026-06-21T11:48:00.000Z"
+  }
+]</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GET SINGLE -->
+                <div id="get-ticket" class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggle(this)">
+                        <span class="method method-GET">GET</span>
+                        <div class="endpoint-info">
+                            <div class="endpoint-path">/api/tickets/:id</div>
+                            <div class="endpoint-name">Get a single ticket with full details and responses</div>
+                        </div>
+                        <div class="endpoint-meta">
+                            <span class="auth-badge auth-required">🔒 Auth</span>
+                            <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="endpoint-body one-col">
+                        <div>
+                            <div class="body-section-title">Response 200</div>
+                            <pre>{
+  "message": "Ticket Fetched!",
+  "ticket": {
+    "_id": "6a37cfa4...",
+    "title": "React app shows white screen",
+    "description": "My React app crashes on load...",
+    "status": "IN_PROGRESS",
+    "priority": "high",
+    "helpfulNotes": "Check for incorrect hook usage. Verify useEffect dependencies.",
+    "relatedSkills": ["React", "React Hooks", "JavaScript"],
+    "assignedTo": { "email": "moderator@example.com", "_id": "6a37ab..." },
+    "responses": [
+      {
+        "senderId": "6a37ab...",
+        "senderRole": "moderator",
+        "message": "Hello! I've reviewed your ticket...",
+        "createdAt": "2026-06-21T12:00:00.000Z"
+      }
+    ]
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADD RESPONSE -->
+                <div id="add-response" class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggle(this)">
+                        <span class="method method-POST">POST</span>
+                        <div class="endpoint-info">
+                            <div class="endpoint-path">/api/tickets/:id/responses</div>
+                            <div class="endpoint-name">Add a reply to a ticket thread</div>
+                        </div>
+                        <div class="endpoint-meta">
+                            <span class="auth-badge auth-required">🔒 Auth</span>
+                            <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="endpoint-body two-col">
+                        <div>
+                            <div class="body-section-title">Request Body</div>
+                            <pre class="pre-req">{
+  "message": "I tried clearing the cache but the issue persists."
+}</pre>
+                            <div class="note">Ticket status updates automatically: user reply → TODO, moderator reply →
+                                IN_PROGRESS.</div>
+                        </div>
+                        <div>
+                            <div class="body-section-title">Response 200</div>
+                            <pre>{
+  "success": true,
+  "ticket": {
+    "_id": "6a37cfa4...",
+    "status": "TODO",
+    "responses": [
+      {
+        "senderId": "6a37c7c2...",
+        "senderRole": "user",
+        "message": "I tried clearing the cache...",
+        "createdAt": "2026-06-21T12:05:00.000Z"
+      }
+    ]
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI DRAFT -->
+                <div id="ai-draft" class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggle(this)">
+                        <span class="method method-POST">POST</span>
+                        <div class="endpoint-info">
+                            <div class="endpoint-path">/api/tickets/:id/draft</div>
+                            <div class="endpoint-name">Generate an AI-powered reply draft using Groq LLM</div>
+                        </div>
+                        <div class="endpoint-meta">
+                            <span class="auth-badge auth-admin">⭐ Mod/Admin</span>
+                            <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="endpoint-body one-col">
+                        <div>
+                            <div class="body-section-title">Response 200</div>
+                            <pre>{
+  "draft": "Hello! Thank you for reaching out. I've reviewed your ticket regarding the white screen issue in your React application.\n\nBased on the AI triage notes, this is most likely caused by an incorrect usage of React hooks such as useEffect or useMemo.\n\nCould you please open your browser's developer console (F12) and share any error messages you see there? That will help me pinpoint the exact cause.\n\nBest regards, Support Team"
+}</pre>
+                            <div class="note">Uses Mixtral via Groq. The AI is guided by the helpfulNotes generated
+                                during the initial triage step.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SYSTEM -->
+            <div id="system" class="section">
+                <div class="section-title">System</div>
+                <div class="section-desc">Utility endpoints for monitoring and health checking.</div>
+
+                <div id="health" class="endpoint-card">
+                    <div class="endpoint-header" onclick="toggle(this)">
+                        <span class="method method-GET">GET</span>
+                        <div class="endpoint-info">
+                            <div class="endpoint-path">/health</div>
+                            <div class="endpoint-name">Server and database health check</div>
+                        </div>
+                        <div class="endpoint-meta">
+                            <span class="auth-badge auth-public">Public</span>
+                            <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor"
+                                stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="endpoint-body one-col">
+                        <div>
+                            <div class="body-section-title">Response 200</div>
+                            <pre>{
+  "status": "UP",
+  "environment": "development",
+  "dbState": "Connected",
+  "timestamp": "2026-06-21T11:48:00.000Z"
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggle(header) {
+            const body = header.nextElementSibling;
+            const chevron = header.querySelector('.chevron');
+            const isOpen = body.classList.contains('open');
+            body.classList.toggle('open', !isOpen);
+            chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+        }
+
+        // Highlight active sidebar link on scroll
+        const sections = document.querySelectorAll('.endpoint-card');
+        const links = document.querySelectorAll('.sidebar-link');
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(sec => {
+                if (window.scrollY >= sec.offsetTop - 100) current = sec.id;
+            });
+            links.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+            });
+        });
+    </script>
+</body>
+
+</html>

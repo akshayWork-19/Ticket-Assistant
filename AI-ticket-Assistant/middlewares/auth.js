@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import config from "../config/config.js";
 // import User from "../models/user.model.js"
 
 export const authenticate = async (req, res, next) => {
@@ -11,7 +12,7 @@ export const authenticate = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, config.jwtSecret);
     // console.log(decoded);
 
     // console.log(user);
@@ -19,7 +20,7 @@ export const authenticate = async (req, res, next) => {
     // console.log(req.user);
     next();
   } catch (error) {
-    return res.status(500).json({ error: "Invalid Token" + error.message });
+    return res.status(500).json({ error: "Invalid Token " + error.message });
   }
 }
 
